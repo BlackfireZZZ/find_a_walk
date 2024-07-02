@@ -39,13 +39,22 @@ class Event {
     }
 }
 users = [
-    new User('Chinese developers Team', [1, 7, 2024], ['89456783542']),
+    new User('Chinese developers Team', [1, 7, 2024], ['89456783542', 'nightmarefuel']),
 ];
 loggeduser = users[0];
 profilescreen = document.getElementById('Profile');
 let UserName = document.getElementById('username');
 let UserAge = document.getElementById('userage');
 let UserContacts = document.getElementById('usercontacts');
+loggeduser.contacts.forEach(element => {
+    let newcontact = document.createElement('div');
+    newcontact.style = "border-radius: 20px; background-color: grey";
+    let text = document.createElement('h5');
+    text.style = "color: white; margin-top: -10px";
+    text.innerHTML = element;
+    newcontact.appendChild(text);
+    UserContacts.appendChild(newcontact);
+})
 UserName.innerHTML = loggeduser.nickname;
 UserAge.innerHTML = new Date().getFullYear() - loggeduser.birthdate[2];
 
