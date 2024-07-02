@@ -4,10 +4,12 @@ import (
 	"context"
 
 	"find_a_walk/internal/domain"
+
+	"github.com/google/uuid"
 )
 
 type UserRepository interface {
-	GetUserByID(ctx context.Context, id int) (*domain.User, error)
+	GetUserByID(ctx context.Context, id uuid.UUID) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) error
 	GetUserInterests(ctx context.Context, id int) ([]*domain.Interest, error)
 }
@@ -21,7 +23,7 @@ func NewDefaultUserService(repo UserRepository) *UserService {
 	return &UserService{repo: repo}
 }
 
-func (s *UserService) GetUserByID(ctx context.Context, id int) (*domain.User, error) {
+func (s *UserService) GetUserByID(ctx context.Context, id uuid.UUID) (*domain.User, error) {
 	return s.repo.GetUserByID(ctx, id)
 }
 
@@ -32,3 +34,4 @@ func (s *UserService) CreateUser(ctx context.Context, user *domain.User) error {
 func (s *UserService) GetUserInterests(ctx context.Context, id int) ([]*domain.Interest, error) {
 	return s.repo.GetUserInterests(ctx, id)
 }
+
