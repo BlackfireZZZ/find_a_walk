@@ -14,6 +14,7 @@ import (
 type UserService interface {
 	GetUserByID(ctx context.Context, id int) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) error
+	GetUserInterests(ctx context.Context, id int) ([]*domain.Interest, error)
 }
 
 // Обработчики HTTP запросов
@@ -60,4 +61,22 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+func (h *UserHandler) GetUserInterests(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	userID := 0
+	var err error
+	if userID, err = strconv.Atoi(id); err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+	interests, err := h.service.GetUserInterests(r.Context(), userID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(interests)
 }

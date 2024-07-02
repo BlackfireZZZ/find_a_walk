@@ -8,6 +8,7 @@ import (
 type eventRepository interface {
 	GetEventByID(ctx context.Context, id int) (*domain.Event, error)
 	CreateEvent(ctx context.Context, event *domain.Event) error
+	GetEventTags(ctx context.Context, id int) ([]*domain.Tag, error)
 }
 
 // Реализация сервиса
@@ -25,4 +26,8 @@ func (s *EventService) GetEventByID(ctx context.Context, id int) (*domain.Event,
 
 func (s *EventService) CreateEvent(ctx context.Context, event *domain.Event) error {
 	return s.repo.CreateEvent(ctx, event)
+}
+
+func (s *EventService) GetEventTags(ctx context.Context, id int) ([]*domain.Tag, error) {
+	return s.repo.GetEventTags(ctx, id)
 }

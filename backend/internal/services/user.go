@@ -9,6 +9,7 @@ import (
 type UserRepository interface {
 	GetUserByID(ctx context.Context, id int) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) error
+	GetUserInterests(ctx context.Context, id int) ([]*domain.Interest, error)
 }
 
 // Реализация сервиса
@@ -26,4 +27,8 @@ func (s *UserService) GetUserByID(ctx context.Context, id int) (*domain.User, er
 
 func (s *UserService) CreateUser(ctx context.Context, user *domain.User) error {
 	return s.repo.CreateUser(ctx, user)
+}
+
+func (s *UserService) GetUserInterests(ctx context.Context, id int) ([]*domain.Interest, error) {
+	return s.repo.GetUserInterests(ctx, id)
 }
