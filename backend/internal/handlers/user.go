@@ -4,15 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 
 	"find_a_walk/internal/domain"
 )
 
 type UserService interface {
-	GetUserByID(ctx context.Context, id int) (*domain.User, error)
+	GetUserByID(ctx context.Context, id uuid.UUID) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) error
 }
 
@@ -28,9 +28,9 @@ func NewUserHandler(service UserService) *UserHandler {
 func (h *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	userID := 0
+	userID := uuid.New()
 	var err error
-	if userID, err = strconv.Atoi(id); err != nil {
+	if userID, err = uuid.Parse(id); err != nil {
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
