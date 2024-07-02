@@ -23,33 +23,32 @@ func init() {
 }
 
 func main() {
-	// Подключение к базе данных
+	// Connect to DB
 	db, err := pgxpool.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	// Создание репозитория, сервиса и обработчиков
-	UserRepo := repositories.NewUserRepository(db)
-	EventRepo := repositories.NewEventRepository(db)
-	UserService := services.NewDefaultUserService(UserRepo)
-	EventService := services.NewDefaultEventService(EventRepo)
-	UserHandler := handlers.NewUserHandler(UserService)
-	EventHandler := handlers.NewEventHandler(EventService)
+	userRepo := repositories.NewUserRepository(db)
+	userService := services.NewDefaultUserService(userRepo)
+	UserHandler := handlers.NewUserHandler(userService)
+	// EventRepo := repositories.NewEventRepository(db)
+	// EventService := services.NewDefaultEventService(EventRepo)
+	// EventHandler := handlers.NewEventHandler(EventService)
 
 	// Настройка маршрутизатора
 	r := chi.NewRouter()
 	UserRouter := chi.NewRouter()
-	EventRouter := chi.NewRouter()
+	// EventRouter := chi.NewRouter(
 
 	r.Mount("/users", UserRouter)
-	UserRouter.Get("{id}", UserHandler.GetUserByID)
-	UserRouter.Post("", UserHandler.CreateUser)
+	UserRouter.Get("/{id}", UserHandler.GetUserByID)
+	UserRouter.Post("/", UserHandler.CreateUser)
 
-	r.Mount("/events", EventRouter)
-	EventRouter.Get("{id}", EventHandler.GetEventByID)
-	EventRouter.Post("", EventHandler.CreateEvent)
+	// r.Mount("/events", EventRouter)
+	// EventRouter.Get("{id}", EventHandler.GetEventByID)
+	// EventRouter.Post("", EventHandler.CreateEvent)
 
 	// Запуск HTTP сервера
 	log.Println("Starting server on :8080")
