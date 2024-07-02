@@ -1,0 +1,82 @@
+openapi: 3.0.3
+info:
+  title: Event Service API
+  version: 1.0.0
+paths:
+  /events/{id}:
+    get:
+      summary: Get Event by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid event ID
+        '500':
+          description: Internal server error
+  /events:
+    post:
+      summary: Create a new Event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '201':
+          description: Event created successfully
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        author_id:
+          type: string
+          format: uuid
+        start_longitude:
+          type: number
+          format: double
+        start_latitude:
+          type: number
+          format: double
+        end_longitude:
+          type: number
+          format: double
+        end_latitude:
+          type: number
+          format: double
+        date:
+          type: string
+          format: date-time
+        capacity:
+          type: integer
+        members_count:
+          type: integer
+      required:
+        - id
+        - author_id
+        - start_longitude
+        - start_latitude
+        - end_longitude
+        - end_latitude
+        - date
+        - capacity
+        - members_count
