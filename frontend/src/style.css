@@ -1,0 +1,46 @@
+header{
+    width: 100%;
+    border: black 1px solid;
+    font-family: Arial;
+}
+#Profile{
+    height: 700px;
+    width: 20%;
+    display: inline-block;
+    background-color:rgb(200, 200, 200);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+#UserContacts{
+    width: 100%;
+    height: auto;
+    background-color:rgb(78, 78, 78);
+    border-radius: 20px;
+}
+#CurrentEvents{
+    width: 75%;
+    height: auto;
+    position: absolute;
+    display: inline-block;
+    bottom: 0px;
+    background-color:rgb(200, 200, 200);
+    border-radius: 20px;
+    margin: 5px;
+    padding: 10px;
+}
+.Event{
+    background-color: white;
+    border-radius: 20px;
+    padding: 3px 10px 1px 10px;
+    margin-bottom: 5px;
+}
+h2 {
+    font-family: Arial;
+}
+h5 {
+    font-family: Arial;
+}
+p {
+    font-family: Arial;
+    font-size: 10px;
+}
