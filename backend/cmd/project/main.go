@@ -31,13 +31,15 @@ func main() {
 	}
 	defer db.Close()
 
+	// Connect dependencies
 	userRepo := repositories.NewUserRepository(db)
 	userService := services.NewDefaultUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
-	// EventRepo := repositories.NewEventRepository(db)
-	// EventService := services.NewDefaultEventService(EventRepo)
-	// EventHandler := handlers.NewEventHandler(EventService)
+	eventRepo := repositories.NewEventRepository(db)
+	eventService := services.NewDefaultEventService(eventRepo)
+	eventHandler := handlers.NewEventHandler(eventService)
 
+	// Setting routes
 	r := chi.NewRouter()
 	r.Use(
 		render.SetContentType(render.ContentTypeJSON),
@@ -51,11 +53,12 @@ func main() {
 		r.Post("/", userHandler.CreateUser)
 	})
 
-	// r.Mount("/events", EventRouter)
-	// EventRouter.Get("{id}", EventHandler.GetEventByID)
-	// EventRouter.Post("", EventHandler.CreateEvent)
+	r.Route("/events", func(r chi.Router) {
+		r.Get("/{id}", eventHandler.GetEventByID)
+		r.Post("/", eventHandler.CreateEvent)
+	})
 
-	// Запуск HTTP сервера
+	// Start HTTP server
 	serverPort := os.Getenv("SERVER_PORT")
 	log.Println("Starting server on: ", serverPort)
 	log.Fatal(http.ListenAndServe("localhost:"+serverPort, r))
