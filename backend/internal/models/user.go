@@ -1,4 +1,4 @@
-package repositories
+package models
 
 import (
 	"context"
