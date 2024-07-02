@@ -2,9 +2,9 @@
 import React from 'react';
 import './App.css';
 import User from './components/User';
-import Profile from './components/Profile';
-import { Event, EventComponent } from './components/Event';
-import YandexMap from './components/YandexMap';
+import Profile from './components/Profile.jsx';
+import { Event, EventComponent } from './components/Event.jsx';
+import YandexMap from './components/YandexMap.jsx';
 
 const users = [
     new User('Chinese developers Team', [1, 7, 2024], [
