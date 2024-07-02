@@ -2,27 +2,32 @@ package services
 
 import (
 	"context"
+<<<<<<< HEAD
 	"github.com/BlackfireZZZ/find_a_walk/internal/domain"
+=======
+
+	"find_a_walk/internal/domain"
+>>>>>>> 9a73157d27c4455022c57b14e97da788acc1039c
 )
 
-type UserRepository interface {
-	GetUserByID(ctx context.Context, id int) (*domain.User, error)
-	CreateUser(ctx context.Context, user *domain.User) error
+type eventRepository interface {
+	GeteventByID(ctx context.Context, id int) (*domain.event, error)
+	Createevent(ctx context.Context, event *domain.event) error
 }
 
 // Реализация сервиса
-type UserService struct {
-	repo UserRepository
+type eventService struct {
+	repo eventRepository
 }
 
-func NewDefaultUserService(repo UserRepository) *UserService {
-	return &UserService{repo: repo}
+func NewDefaulteventService(repo eventRepository) *eventService {
+	return &eventService{repo: repo}
 }
 
-func (s *UserService) GetUserByID(ctx context.Context, id int) (*domain.User, error) {
-	return s.repo.GetUserByID(ctx, id)
+func (s *eventService) GeteventByID(ctx context.Context, id int) (*domain.event, error) {
+	return s.repo.GeteventByID(ctx, id)
 }
 
-func (s *UserService) CreateUser(ctx context.Context, user *domain.User) error {
-	return s.repo.CreateUser(ctx, user)
+func (s *eventService) Createevent(ctx context.Context, event *domain.event) error {
+	return s.repo.Createevent(ctx, event)
 }
