@@ -1,5 +1,17 @@
 version: "1"
 services:
+  app:
+    build:
+      context: ../
+      dockerfile: backend/Dockerfile
+    environment:
+      DB_HOST: db
+      DB_NAME: postgres
+      DB_PASSWORD: PROD
+      DB_USER: postgres
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     image: postgres:alpine3.19
     restart: always
