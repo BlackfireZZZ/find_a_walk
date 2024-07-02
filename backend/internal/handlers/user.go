@@ -14,7 +14,7 @@ import (
 type UserService interface {
 	GetUserByID(ctx context.Context, id uuid.UUID) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) error
-	GetUserInterests(ctx context.Context, id int) ([]*domain.Interest, error)
+	GetUserInterests(ctx context.Context, id uuid.UUID) ([]*domain.Interest, error)
 }
 
 // Обработчики HTTP запросов
@@ -65,9 +65,9 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *UserHandler) GetUserInterests(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	userID := 0
+	userID := uuid.New()
 	var err error
-	if userID, err = strconv.Atoi(id); err != nil {
+	if userID, err = uuid.Parse(id); err != nil {
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}

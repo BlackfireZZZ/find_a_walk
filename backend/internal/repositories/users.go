@@ -15,6 +15,11 @@ type UserRepository struct {
 	db *pgxpool.Pool
 }
 
+// GetUserInterests implements services.UserRepository.
+func (r *UserRepository) GetUserInterests(ctx context.Context, id int) ([]*domain.Interest, error) {
+	panic("unimplemented")
+}
+
 func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 	return &UserRepository{db: db}
 }
