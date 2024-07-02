@@ -9,9 +9,9 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/jackc/pgx/v4/pgxpool"
 
-	"hse_school/internal/handlers"
-	"hse_school/internal/repositories"
-	"hse_school/internal/services"
+	"find_a_walk/internal/handlers"
+	"find_a_walk/internal/repositories"
+	"find_a_walk/internal/services"
 )
 
 func main() {

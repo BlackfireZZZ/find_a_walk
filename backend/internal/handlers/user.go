@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"hse_school/internal/domain"
+	"find_a_walk/internal/domain"
 )
 
 type UserService interface {

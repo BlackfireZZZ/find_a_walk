@@ -5,7 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v4/pgxpool"
 
-	"hse_school/internal/domain"
+	"find_a_walk/internal/domain"
 )
 
 // Реализация репозитория
