@@ -13,6 +13,7 @@ type EventService interface {
 	GetEventByID(ctx context.Context, id int) (*domain.Event, error)
 	CreateEvent(ctx context.Context, event *domain.Event) error
 	GetEventTags(ctx context.Context, id int) ([]*domain.Tag, error)
+	GetEventMembers(ctx context.Context, eventID int) ([]*domain.User, error)
 }
 
 // Обработчики HTTP запросов
@@ -78,4 +79,23 @@ func (h *EventHandler) GetEventTags(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(tags)
+}
+
+func (h *EventHandler) GetEventMembers(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	eventID := 0
+	var err error
+	if eventID, err = strconv.Atoi(id); err != nil {
+		http.Error(w, "Invalid event ID", http.StatusBadRequest)
+		return
+	}
+
+	members, err := h.service.GetEventMembers(r.Context(), eventID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(members)
 }
