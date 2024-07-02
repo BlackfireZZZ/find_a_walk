@@ -1,0 +1,17 @@
+.Profile{
+    height: 100%;
+    width: 20%;
+    display: inline-block;
+    background-color:rgb(178, 178, 178);
+    border-radius: 20px;
+}
+.CurrentEvents{
+    width: 100%;
+    height: 250px;
+    position: absolute;
+    display: inline-block;
+    bottom: 0;
+    background-color:rgb(178, 178, 178);
+    border-radius: 20px;
+    margin: 5px;
+}
