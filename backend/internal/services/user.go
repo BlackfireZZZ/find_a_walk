@@ -2,8 +2,7 @@ package services
 
 import (
 	"context"
-
-	"hse_school/internal/domain"
+	"github.com/BlackfireZZZ/find_a_walk/internal/domain"
 )
 
 type UserRepository interface {
