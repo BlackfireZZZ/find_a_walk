@@ -26,6 +26,7 @@ func init() {
 func main() {
 	// Connect to DB
 	db, err := pgxpool.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,6 +46,8 @@ func main() {
 		render.SetContentType(render.ContentTypeJSON),
 		middleware.Logger,
 		middleware.RedirectSlashes,
+		middleware.RequestID,
+		middleware.Recoverer,
 	)
 	r.Mount("/api/v1", r)
 
@@ -56,10 +59,10 @@ func main() {
 	r.Route("/events", func(r chi.Router) {
 		r.Get("/{id}", eventHandler.GetEventByID)
 		r.Post("/", eventHandler.CreateEvent)
+		r.Get("/", eventHandler.GetEvents)
 	})
 
 	// Start HTTP server
-	serverPort := os.Getenv("SERVER_PORT")
-	log.Println("Starting server on: ", serverPort)
-	log.Fatal(http.ListenAndServe("localhost:"+serverPort, r))
+	log.Println("Starting server on: ", os.Getenv("SERVER_ADRESS"))
+	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_ADRESS"), r))
 }
