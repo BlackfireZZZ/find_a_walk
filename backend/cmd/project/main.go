@@ -58,8 +58,8 @@ func main() {
 
 	r.Route("/events", func(r chi.Router) {
 		r.Get("/{id}", eventHandler.GetEventByID)
-		r.Post("/", eventHandler.CreateEvent)
 		r.Get("/", eventHandler.GetEvents)
+		r.Post("/", eventHandler.CreateEvent)
 	})
 
 	// Start HTTP server
