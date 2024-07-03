@@ -39,6 +39,9 @@ func main() {
 	eventRepo := repositories.NewEventRepository(db)
 	eventService := services.NewDefaultEventService(eventRepo)
 	eventHandler := handlers.NewEventHandler(eventService)
+	tagRepo := repositories.NewTagRepository(db)
+	tagService := services.NewDefaultTagService(tagRepo)
+	tagHandler := handlers.NewTagsHandler(tagService)
 
 	// Setting routes
 	r := chi.NewRouter()
@@ -60,6 +63,10 @@ func main() {
 		r.Get("/{id}", eventHandler.GetEventByID)
 		r.Get("/", eventHandler.GetEvents)
 		r.Post("/", eventHandler.CreateEvent)
+	})
+
+	r.Route("/tags", func(r chi.Router) {
+		r.Get("/", tagHandler.GetTags)
 	})
 
 	// Start HTTP server
