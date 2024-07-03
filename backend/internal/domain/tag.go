@@ -1,7 +1,13 @@
 package domain
 
+import "net/http"
+
 type Tag struct {
-	ID       int    `json:"id"`
-	Event_id int    `json:"event_id"`
-	Tag      string `json:"tag"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+
+func (e *Tag) Render(w http.ResponseWriter, r *http.Request) error {
+	return nil
 }

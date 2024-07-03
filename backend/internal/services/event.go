@@ -3,36 +3,43 @@ package services
 import (
 	"context"
 	"find_a_walk/internal/domain"
+
+	"github.com/google/uuid"
 )
 
-type eventRepository interface {
-	GetEventByID(ctx context.Context, id int) (*domain.Event, error)
-	CreateEvent(ctx context.Context, event *domain.Event) error
-	GetEventTags(ctx context.Context, id int) ([]*domain.Tag, error)
-	GetEventMembers(ctx context.Context, eventID int) ([]*domain.User, error)
+type EventRepository interface {
+	GetEventByID(ctx context.Context, id uuid.UUID) (*domain.Event, error)
+	CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error)
+	GetEvents(ctx context.Context) ([]*domain.Event, error)
+	// GetEventTags(ctx context.Context, id uuid.UUID) ([]*domain.Tag, error)
+	// GetEventMembers(ctx context.Context, eventID int) ([]*domain.User, error)
 }
 
 // Реализация сервиса
 type EventService struct {
-	repo eventRepository
+	repo EventRepository
 }
 
-func NewDefaultEventService(repo eventRepository) *EventService {
+func NewDefaultEventService(repo EventRepository) *EventService {
 	return &EventService{repo: repo}
 }
 
-func (s *EventService) GetEventByID(ctx context.Context, id int) (*domain.Event, error) {
+func (s *EventService) GetEventByID(ctx context.Context, id uuid.UUID) (*domain.Event, error) {
 	return s.repo.GetEventByID(ctx, id)
 }
 
-func (s *EventService) CreateEvent(ctx context.Context, event *domain.Event) error {
+func (s *EventService) CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error) {
 	return s.repo.CreateEvent(ctx, event)
 }
 
-func (s *EventService) GetEventTags(ctx context.Context, id int) ([]*domain.Tag, error) {
-	return s.repo.GetEventTags(ctx, id)
+func (s *EventService) GetEvents(ctx context.Context) ([]*domain.Event, error) {
+	return s.repo.GetEvents(ctx)
 }
 
-func (s *EventService) GetEventMembers(ctx context.Context, eventID int) ([]*domain.User, error) {
-	return s.repo.GetEventMembers(ctx, eventID)
-}
+// func (s *EventService) GetEventTags(ctx context.Context, id uuid.UUID) ([]*domain.Tag, error) {
+// 	return s.repo.GetEventTags(ctx, id)
+// }
+
+// func (s *EventService) GetEventMembers(ctx context.Context, eventID int) ([]*domain.User, error) {
+// 	return s.repo.GetEventMembers(ctx, eventID)
+// }
