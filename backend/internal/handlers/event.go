@@ -29,12 +29,29 @@ func NewEventHandler(service EventService) *EventHandler {
 }
 
 func (h *EventHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
-	events, err := h.service.GetEvents(r.Context())
-	if err != nil {
-		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusInternalServerError))
+	query := r.URL.Query()
+	if _, ok := query["lat1"]; ok {
+		lat1 := query["lat1"]
+		lat2 := query["lat2"]
+		lon1 := query["lon1"]
+		lon2 := query["lon2"]
+		coordinates, err := StrToFloat64([]string{lat1[0], lat2[0], lon1[0], lon2[0]})
+		if err != nil {
+			render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
+			return
+		}
+		events, err := h.service.GetEventsByAnglesCoordinates(r.Context(), coordinates[0], coordinates[1], coordinates[2], coordinates[3])
+		if err != nil {
+			render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusInternalServerError))
+		}
+		render.RenderList(w, r, newEventList(events))
+	} else {
+		events, err := h.service.GetEvents(r.Context())
+		if err != nil {
+			render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusInternalServerError))
+		}
+		render.RenderList(w, r, newEventList(events))
 	}
-
-	render.RenderList(w, r, newEventList(events))
 }
 
 func newEventList(events []*domain.Event) []render.Renderer {
@@ -94,25 +111,4 @@ func StrToFloat64(list []string) ([]float64, error) {
 		res = append(res, f)
 	}
 	return res, nil
-}
-
-func (h *EventHandler) GetEventsByAnglesCoordinates(w http.ResponseWriter, r *http.Request) {
-	lon1 := r.URL.Query().Get("lon1")
-	lat1 := r.URL.Query().Get("lat1")
-	lon2 := r.URL.Query().Get("lon2")
-	lat2 := r.URL.Query().Get("lat2")
-
-	coordinates, err := StrToFloat64([]string{lon1, lat1, lon2, lat2})
-	if err != nil {
-		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
-		return
-	}
-
-	events, err := h.service.GetEventsByAnglesCoordinates(r.Context(), coordinates[0], coordinates[1], coordinates[2], coordinates[3])
-	if err != nil {
-		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusInternalServerError))
-		return
-	}
-
-	render.RenderList(w, r, newEventList(events))
 }
