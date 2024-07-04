@@ -23,16 +23,23 @@ function App() {
     return (
         <div className="App">
             <header className="App-header">
-                <h1>Events and User Profile</h1>
-                <YandexMap />
+                <h3>Events and User Profile</h3>
+                
             </header>
             <main>
                 <Profile user={loggedUser} />
-                <div id="CurrentEvents">
+                <div style={{display: 'inline-block', width: '78%'}}>
+                    <YandexMap />
+                    <div id="CurrentEvents" style={{}}>
                     {events.map((event, index) => (
                         <EventComponent key={index} event={event} />
                     ))}
+                    </div>
                 </div>
+                
+                
+                
+                
             </main>
         </div>
     );
