@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>За компанию</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="base.css">
+        <meta charset="utf-8">
+        <script src="https://api-maps.yandex.ru/v3/?apikey=bf970de3-49bc-4e90-be4d-974afc1c63a0&lang=ru_RU"></script>
+    </head>
+    <body>
+        <script src="users.js" defer></script>
+        <script src="events.js" defer></script>
+        <script src="map.js" defer></script>
+
+        <header id="container" style="padding-left: 5px">
+            <input type = "button" value="Profile (Hide/Show)" onclick="ProfilePanelSwitch();" style="display: inline-block">
+            <input type = "button" value="Current events (Hide/Show)" onclick="CurrentEventsPanelSwitch();" style="display: inline-block">
+            <input type = "button" value="Create new event" onclick="CreateNewEvent();" style="display: inline-block">
+            <p style = "display: inline-block">Find the hangout. Powered by Chinese developers</p>
+        </header>
+        <div id="Profile">
+            <h5 id="username"></h5>
+            <p style="margin-top:-20px">Nickname</p>
+            <h5 id="userage"></h5>
+            <p style="margin-top:-20px">Age</p>
+            <div id="usercontacts">
+                <input id="contactinput" type = "placeholder" placeholder="Phone, E-mail, Telegram, ..." style="display: inline-block; width: 98%">
+                <input type = "button" value="+ Add contact" onclick="ContactAppend(document.getElementById('contactinput').value);" style="display: inline-block; width: 100%">
+            </div>
+        </div>
+        <div style="display: inline-block; width: 78%">
+        <div id="map" style="display: inline-block; width: 100%; height: 322px; "></div>
+        <div id="CurrentEvents"></div>
+        <div id="CreateEvent">
+            <div style="display: inline-block">
+                <input type="placeholder" placeholder="Название">
+                <input type="placeholder" placeholder="Макс. кол-во участников">
+                <p>Точка сбора</p>
+                <div>
+                    <input type="placeholder" placeholder = "Мин. возраст">
+                    <input type="placeholder" placeholder = "Макс. возраст">
+                </div>
+                <input type="placeholder" placeholder="Время сбора (ЧЧ:ММ)">
+                <input type="button" class="ToGoButton" value="Опубликовать">
+            </div>
+            <textarea style="vertical-align: top; height: 100%">Описание</textarea>
+        </div>
+        </div>
+    </body>
+</html>
