@@ -16,7 +16,7 @@ const loggedUser = users[0];
 
 const events = [
     new Event('Чилл без бухла', users[0], 'Станция Новокосино', 16, 19, '27.07.2024'),
-    new Event('ААА помогите с React', users[0], 'НИУ ВШЭ. Покровский бульвар 11', 16, 19, '11.07.2024')
+    new Event('ААА помогите с фронтендом', users[0], 'НИУ ВШЭ, Покровский бульвар 11', 16, 19, '11.07.2024')
 ];
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
         <div className="App">
             <header className="App-header">
                 <h3>Events and User Profile</h3>
-                
+                <input type="button" value="+ New event"></input>
             </header>
             <main>
                 <Profile user={loggedUser} />
@@ -36,10 +36,6 @@ function App() {
                     ))}
                     </div>
                 </div>
-                
-                
-                
-                
             </main>
         </div>
     );
