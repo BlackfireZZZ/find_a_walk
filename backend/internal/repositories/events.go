@@ -5,6 +5,7 @@ import (
 	"errors"
 	"find_a_walk/internal/domain"
 	"log"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
@@ -189,4 +190,21 @@ func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1
 		result = append(result, event)
 	}
 	return result, nil
+}
+
+func (r *EventRepository) DeleteExpiredEvents(ctx context.Context) error {
+	query, args, err := squirrel.
+		Delete("events").
+		Where(squirrel.LtOrEq{"date": time.Now()}).
+		PlaceholderFormat(squirrel.Dollar).
+		ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.Exec(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+	return nil
 }
