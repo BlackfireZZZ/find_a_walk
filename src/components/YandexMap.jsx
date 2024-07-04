@@ -26,7 +26,7 @@ const YandexMap = () => {
     }, []);
 
     return (
-        <div id="map" style={{width: '100%', height: '235px'}}></div>
+        <div id="map" style={{ display: 'inline-block', width: '78%', height: '100vh' }}></div>
     );
 };
 

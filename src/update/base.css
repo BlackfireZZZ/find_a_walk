@@ -1,0 +1,29 @@
+h1 {
+    font-family: Arial;
+}
+h2 {
+    font-family: Arial;
+}
+h3 {
+    font-family: Arial;
+}
+h4 {
+    font-family: Arial;
+}
+h5 {
+    font-family: Arial;
+}
+p {
+    font-family: Arial;
+    font-size: 10px;
+}
+input {
+    font-size: 20px;
+    border: 0;
+    border-radius: 20px;
+    margin: 5px;
+}
+input:hover {
+    background-color: gray;
+    color: white;
+}

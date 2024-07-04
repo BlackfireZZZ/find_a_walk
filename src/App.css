@@ -1,0 +1,10 @@
+.App-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.map-container {
+    width: 500px;
+    height: 500px;
+}
