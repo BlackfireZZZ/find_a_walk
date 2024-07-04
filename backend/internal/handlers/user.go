@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
 	"github.com/google/uuid"
 
 	"find_a_walk/internal/domain"
@@ -13,8 +13,7 @@ import (
 
 type UserService interface {
 	GetUserByID(ctx context.Context, id uuid.UUID) (*domain.User, error)
-	CreateUser(ctx context.Context, user *domain.User) error
-	GetUserInterests(ctx context.Context, id uuid.UUID) ([]*domain.Interest, error)
+	CreateUser(ctx context.Context, user *domain.UserIn) (*domain.User, error)
 }
 
 // Обработчики HTTP запросов
@@ -29,54 +28,35 @@ func NewUserHandler(service UserService) *UserHandler {
 func (h *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	userID := uuid.New()
-	var err error
-	if userID, err = uuid.Parse(id); err != nil {
-		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+	userID, err := uuid.Parse(id)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
 		return
 	}
 
 	user, err := h.service.GetUserByID(r.Context(), userID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusNotFound))
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	render.Render(w, r, user)
 }
 
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user domain.User
-	err := json.NewDecoder(r.Body).Decode(&user)
+	userSchema := &domain.UserIn{}
+	err := render.Bind(r, userSchema)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
 		return
 	}
 
-	err = h.service.CreateUser(r.Context(), &user)
+	user, err := h.service.CreateUser(r.Context(), userSchema)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusInternalServerError))
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-}
-
-func (h *UserHandler) GetUserInterests(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	userID := uuid.New()
-	var err error
-	if userID, err = uuid.Parse(id); err != nil {
-		http.Error(w, "Invalid user ID", http.StatusBadRequest)
-		return
-	}
-	interests, err := h.service.GetUserInterests(r.Context(), userID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(interests)
+	render.Status(r, http.StatusCreated)
+	render.Render(w, r, user)
 }
