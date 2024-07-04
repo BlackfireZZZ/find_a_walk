@@ -17,6 +17,8 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 .idea
+.vscode
 # Go workspace file
 go.work
 go.work.sum
+/backend/.vscode/

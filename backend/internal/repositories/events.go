@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"find_a_walk/internal/domain"
+	"fmt"
 	"log"
 	"time"
 
@@ -148,14 +149,22 @@ func (r *EventRepository) GetEventByID(ctx context.Context, id uuid.UUID) (*doma
 func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64, tags []string) ([]*domain.Event, error) {
 	result := []*domain.Event{}
 
+	stringTags := "("
+	for _, tag := range tags {
+		stringTags += fmt.Sprintf("'%s',", tag)
+	}
+	stringTags += ")"
+
 	query := squirrel.
-		Select("events.*", "count(members.event_id) as members_count").
+		Select("distinct events.*", "count(members.event_id) as members_count").
 		From("events").
 		JoinClause("FULL JOIN members ON members.event_id = events.id").
+		InnerJoin("event_tags ON event_tags.event_id = events.id").
+		Where(fmt.Sprintf("event_tags.tag_id = %s AND event_tags.event_id = events.id", tags)).
 		GroupBy("events.id").
 		PlaceholderFormat(squirrel.Dollar)
 
-	stmt, args, error := query.
+	stmt, args, err := query.
 		Where(squirrel.And{
 			squirrel.GtOrEq{"start_longitude": lon1},
 			squirrel.LtOrEq{"start_longitude": lon2},
@@ -164,8 +173,8 @@ func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1
 		}).
 		ToSql()
 
-	if error != nil {
-		return nil, error
+	if err != nil {
+		return nil, err
 	}
 
 	rows, err := r.db.Query(ctx, stmt, args...)
