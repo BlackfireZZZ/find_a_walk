@@ -1,4 +1,3 @@
-// src/components/YandexMap.js
 import React, { useEffect } from 'react';
 
 const YandexMap = () => {
