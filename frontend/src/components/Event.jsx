@@ -18,11 +18,16 @@ class Event {
 
 const EventComponent = ({ event }) => (
     <div className="Event">
-        <h2>{event.name}</h2>
-        <p style={{ marginTop: '-10px' }}>{event.host.nickname}</p>
-        <h5 style={{ marginTop: '-10px' }}>
+        <div style={{display: 'inline-block'}}>
+            <h2>{event.name}</h2>
+            <p style={{ marginTop: '-10px' }}>{event.host.nickname}</p>
+            <h5 style={{ marginTop: '-10px' }}>
             {event.address}, {event.date}, {event.agemin} - {event.agemax} лет
-        </h5>
+            </h5>
+        </div>
+        <div style={{display: 'inline-block'}}>
+            <input type="button" value="Let's go!" style={{backgroundColor: 'green', color: 'white'}}></input>
+        </div>
     </div>
 );
 
