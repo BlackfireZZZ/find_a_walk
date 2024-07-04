@@ -63,6 +63,7 @@ func main() {
 		r.Get("/{id}", eventHandler.GetEventByID)
 		r.Get("/", eventHandler.GetEvents)
 		r.Post("/", eventHandler.CreateEvent)
+		r.Get("/angles", eventHandler.GetEventsByAnglesCoordinates)
 	})
 
 	r.Route("/tags", func(r chi.Router) {

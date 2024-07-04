@@ -11,6 +11,7 @@ type EventRepository interface {
 	GetEventByID(ctx context.Context, id uuid.UUID) (*domain.Event, error)
 	CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error)
 	GetEvents(ctx context.Context) ([]*domain.Event, error)
+	GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64) ([]*domain.Event, error)
 	// GetEventTags(ctx context.Context, id uuid.UUID) ([]*domain.Tag, error)
 	// GetEventMembers(ctx context.Context, eventID int) ([]*domain.User, error)
 }
@@ -34,6 +35,10 @@ func (s *EventService) CreateEvent(ctx context.Context, event *domain.EventIn) (
 
 func (s *EventService) GetEvents(ctx context.Context) ([]*domain.Event, error) {
 	return s.repo.GetEvents(ctx)
+}
+
+func (s *EventService) GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64) ([]*domain.Event, error) {
+	return s.repo.GetEventsByAnglesCoordinates(ctx, lon1, lat1, lon2, lat2)
 }
 
 // func (s *EventService) GetEventTags(ctx context.Context, id uuid.UUID) ([]*domain.Tag, error) {

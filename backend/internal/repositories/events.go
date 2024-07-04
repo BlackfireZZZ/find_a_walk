@@ -143,3 +143,50 @@ func (r *EventRepository) GetEventByID(ctx context.Context, id uuid.UUID) (*doma
 	}
 	return event, nil
 }
+
+func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64) ([]*domain.Event, error) {
+	result := []*domain.Event{}
+
+	query := squirrel.
+		Select("events.*", "count(members.event_id) as members_count").
+		From("events").
+		JoinClause("FULL JOIN members ON members.event_id = events.id").
+		GroupBy("events.id").
+		PlaceholderFormat(squirrel.Dollar)
+
+	stmt, args, error := query.
+		Where(squirrel.And{
+			squirrel.GtOrEq{"start_longitude": lon1},
+			squirrel.LtOrEq{"start_longitude": lon2},
+			squirrel.GtOrEq{"start_latitude": lat1},
+			squirrel.LtOrEq{"start_latitude": lat2},
+		}).
+		ToSql()
+
+	if error != nil {
+		return nil, error
+	}
+
+	rows, err := r.db.Query(ctx, stmt, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		event := &domain.Event{}
+		err = rows.
+			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+				&event.StartLongitude, &event.EndLatitude,
+				&event.EndLongitude, &event.Date, &event.Capacity,
+				&event.MembersCount)
+		if err != nil {
+			return nil, err
+		}
+		event.Tags, err = r.GetTagsByEventID(ctx, event.ID)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, event)
+	}
+	return result, nil
+}

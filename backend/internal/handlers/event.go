@@ -4,6 +4,7 @@ import (
 	"context"
 	"find_a_walk/internal/domain"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -14,6 +15,7 @@ type EventService interface {
 	GetEventByID(ctx context.Context, id uuid.UUID) (*domain.Event, error)
 	CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error)
 	GetEvents(ctx context.Context) ([]*domain.Event, error)
+	GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64) ([]*domain.Event, error)
 	// GetEventTags(ctx context.Context, id int) ([]*domain.Tag, error)
 	// GetEventMembers(ctx context.Context, eventID int) ([]*domain.User, error)
 }
@@ -80,4 +82,37 @@ func (h *EventHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 
 	render.Status(r, http.StatusCreated)
 	render.Render(w, r, eventSchema)
+}
+
+func StrToFloat64(list []string) ([]float64, error) {
+	var res []float64
+	for _, str := range list {
+		f, err := strconv.ParseFloat(str, 64)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, f)
+	}
+	return res, nil
+}
+
+func (h *EventHandler) GetEventsByAnglesCoordinates(w http.ResponseWriter, r *http.Request) {
+	lon1 := r.URL.Query().Get("lon1")
+	lat1 := r.URL.Query().Get("lat1")
+	lon2 := r.URL.Query().Get("lon2")
+	lat2 := r.URL.Query().Get("lat2")
+
+	coordinates, err := StrToFloat64([]string{lon1, lat1, lon2, lat2})
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
+		return
+	}
+
+	events, err := h.service.GetEventsByAnglesCoordinates(r.Context(), coordinates[0], coordinates[1], coordinates[2], coordinates[3])
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusInternalServerError))
+		return
+	}
+
+	render.RenderList(w, r, newEventList(events))
 }
