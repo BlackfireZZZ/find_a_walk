@@ -79,7 +79,7 @@ func (r *EventRepository) CreateEvent(ctx context.Context, event *domain.EventIn
 	return &eventSchema, nil
 }
 
-func (r *EventRepository) GetEvents(ctx context.Context) ([]*domain.Event, error) {
+func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*domain.Event, error) {
 	query := squirrel.
 		Select("events.*", "count(members.event_id) as members_count").
 		From("events").
@@ -145,7 +145,7 @@ func (r *EventRepository) GetEventByID(ctx context.Context, id uuid.UUID) (*doma
 	return event, nil
 }
 
-func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64) ([]*domain.Event, error) {
+func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64, tags []string) ([]*domain.Event, error) {
 	result := []*domain.Event{}
 
 	query := squirrel.

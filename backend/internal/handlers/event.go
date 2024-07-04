@@ -14,8 +14,8 @@ import (
 type EventService interface {
 	GetEventByID(ctx context.Context, id uuid.UUID) (*domain.Event, error)
 	CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error)
-	GetEvents(ctx context.Context) ([]*domain.Event, error)
-	GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64) ([]*domain.Event, error)
+	GetEvents(ctx context.Context, tags []string) ([]*domain.Event, error)
+	GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64, tags []string) ([]*domain.Event, error)
 	// GetEventTags(ctx context.Context, id int) ([]*domain.Tag, error)
 	// GetEventMembers(ctx context.Context, eventID int) ([]*domain.User, error)
 }
@@ -30,6 +30,7 @@ func NewEventHandler(service EventService) *EventHandler {
 
 func (h *EventHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
+	tags := query["tags"]
 	if _, ok := query["lat1"]; ok {
 		lat1 := query["lat1"]
 		lat2 := query["lat2"]
@@ -40,13 +41,13 @@ func (h *EventHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 			render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
 			return
 		}
-		events, err := h.service.GetEventsByAnglesCoordinates(r.Context(), coordinates[0], coordinates[1], coordinates[2], coordinates[3])
+		events, err := h.service.GetEventsByAnglesCoordinates(r.Context(), coordinates[0], coordinates[1], coordinates[2], coordinates[3], tags)
 		if err != nil {
 			render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusInternalServerError))
 		}
 		render.RenderList(w, r, newEventList(events))
 	} else {
-		events, err := h.service.GetEvents(r.Context())
+		events, err := h.service.GetEvents(r.Context(), tags)
 		if err != nil {
 			render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusInternalServerError))
 		}
