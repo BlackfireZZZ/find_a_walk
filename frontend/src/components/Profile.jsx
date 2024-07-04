@@ -1,16 +1,18 @@
 import React from 'react';
 
 const Profile = ({ user }) => (
-    <div id="Profile">
-        <div id="username">{user.nickname}</div>
-        <div id="userage">{user.getAge()}</div>
+    <div id="Profile" style={{display: 'inline-block'}}>
+        <div id="username"><h3>{user.nickname}</h3></div>
+        <p style={{margin: '-15px 0 10px 0'}}>Nickname</p>
+        <div id="userage"><h3>{user.getAge()} y.o.</h3></div>
+        <p style={{margin: '-15px 0 10px 0'}}>Age</p>
         <div id="usercontacts">
             {user.contacts.map((contact, index) => (
                 <div
                     key={index}
-                    style={{ borderRadius: '20px', backgroundColor: 'grey' }}
+                    style={{ borderRadius: '20px', backgroundColor: 'grey', padding: '1px'}}
                 >
-                    <h5 style={{ color: 'white', marginTop: '-10px' }}>{contact}</h5>
+                    <h5 style={{ color: 'white'}}>{contact}</h5>
                 </div>
             ))}
         </div>
