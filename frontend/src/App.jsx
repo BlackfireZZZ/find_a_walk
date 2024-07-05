@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import User from './components/User';
 import Profile from './components/Profile.jsx';
-import { Event, EventComponent } from './components/Event.jsx';
+import { Event, EventComponent, NewEvent } from './components/Event.jsx';
 import YandexMap from './components/YandexMap.jsx';
 
 const users = [
@@ -23,7 +23,8 @@ function App() {
     return (
         <div className="App">
             <header className="App-header">
-                <h3>Events and User Profile</h3>
+                <h3 style={{display: 'inline-block'}}>Find the walk.</h3>
+                <p style={{display: 'inline-block'}}>Powered by Chinese Developers</p>
                 <input type="button" value="+ New event"></input>
             </header>
             <main>
@@ -35,6 +36,7 @@ function App() {
                         <EventComponent key={index} event={event} />
                     ))}
                     </div>
+                    <NewEvent />
                 </div>
             </main>
         </div>
