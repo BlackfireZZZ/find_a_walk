@@ -54,8 +54,6 @@ func main() {
 		middleware.RequestID,
 		middleware.Recoverer,
 	)
-	r.Mount("/api/v1", r)
-
 	r.Route("/users", func(r chi.Router) {
 		r.Get("/{id}", userHandler.GetUserByID)
 		r.Post("/", userHandler.CreateUser)
