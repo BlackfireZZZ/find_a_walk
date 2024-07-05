@@ -50,9 +50,6 @@ type EventIn struct {
 }
 
 func (a *EventIn) Bind(r *http.Request) error {
-	if a.StartLatitude < 0 || a.StartLongitude < 0 {
-		return errors.New("invalid coordinates")
-	}
 	if a.Date.Before(time.Now()) {
 		return errors.New("date in the past")
 	}

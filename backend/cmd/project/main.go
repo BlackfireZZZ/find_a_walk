@@ -51,6 +51,7 @@ func main() {
 
 	authHandler := handlers.NewAuthHandler(userService)
 
+	go cleaner(eventService, 5*time.Minute)
 	// Setting routes
 	r := chi.NewRouter()
 
@@ -89,4 +90,15 @@ func main() {
 	// Start HTTP server
 	log.Println("Starting server on: ", os.Getenv("SERVER_ADRESS"))
 	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_ADRESS"), r))
+}
+
+func cleaner(service *services.EventService, duration time.Duration) {
+	for {
+		time.Sleep(duration)
+		err := service.DeleteExpiredEvents(context.Background())
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
 }
