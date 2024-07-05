@@ -21,6 +21,11 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    container_name: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
     environment:
       DB_HOST: db
       DB_NAME: postgres
