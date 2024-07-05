@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS event_tags (
     PRIMARY KEY (event_id, tag_id)
 );
 
+
 -- +goose StatementBegin
 SELECT 'up SQL query';
 -- +goose StatementEnd

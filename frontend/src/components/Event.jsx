@@ -1,20 +1,5 @@
 import React from 'react';
 
-class Event {
-    constructor(name, host, address, agemin, agemax, date) {
-        this.name = name;
-        this.host = host;
-        this.address = address;
-        this.agemin = agemin;
-        this.agemax = agemax;
-        this.date = date;
-        this.count = 0;
-    }
-
-    join() {
-        this.count += 1;
-    }
-}
 function NewEventPanelShow(){
     //let div = document.getElementById('CreateEvent');
     //div.style.display = 'block';
@@ -24,6 +9,7 @@ function NewEventPanelHide(){
     //let div = document.getElementById('CreateEvent');
     //div.style.display = "none";
 }
+
 function NewEventAdd(){
     NewEventPanelHide();
     let name = document.getElementsById('name_input').value;
@@ -36,15 +22,18 @@ function NewEventAdd(){
     console.log(name, host, address, agemin, agemax, maxcount, date);
     //events.append(new Event(name, host, address, agemin, agemax, maxcount, date));
 }
+
 const EventComponent = ({ event }) => (
     <div className="Event">
-        <div style={{display: 'inline-block'}}>
-            <h2>{event.name}</h2>
-            <p style={{ marginTop: '-10px' }}>{event.host.nickname}</p>
-            <h5 style={{ marginTop: '-10px' }}>
+        <h2>{event.name}</h2>
+        <p className="event-host">{event.host.nickname}</p>
+        <h5 className="event-details">
             {event.address}, {event.date}, {event.agemin} - {event.agemax} лет
-            </h5>
-        </div>
+        </h5>
+        <div className="event-tags">
+            {event.tags.map((tag, index) => (
+                <span key={index} className="event-tag">{tag}</span>
+            ))}
         <div style={{display: 'inline-block'}}>
             <input type="button" value="Я приду" class="ToGoButton"></input>
         </div>

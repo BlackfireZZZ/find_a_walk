@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const YandexMap = () => {
+const YandexMap = ({ onBoundsChange }) => {
     useEffect(() => {
         const loadScript = (url) => {
             return new Promise((resolve, reject) => {
@@ -20,13 +20,22 @@ const YandexMap = () => {
                         center: [55.7558, 37.6176],
                         zoom: 10
                     });
+
+                    const handleBoundsChange = () => {
+                        const bounds = map.getBounds();
+                        const [leftTop, rightBottom] = bounds;
+                        onBoundsChange({ leftTop, rightBottom });
+                    };
+
+                    map.events.add('boundschange', handleBoundsChange);
+                    handleBoundsChange();
                 });
             })
             .catch((error) => console.error(error));
-    }, []);
+    }, [onBoundsChange]);
 
     return (
-        <div id="map" style={{width: '100%', height: '235px'}}></div>
+        <div id="map" style={{ width: '100%', height: '235px' }}></div>
     );
 };
 
