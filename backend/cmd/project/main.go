@@ -21,7 +21,6 @@ import (
 
 var tokenAuth *jwtauth.JWTAuth
 
-
 func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found")
@@ -41,7 +40,7 @@ func main() {
 
 	// Connect dependencies
 	userRepo := repositories.NewUserRepository(db)
-	userService := services.NewDefaultUserService(userRepo, 6)
+	userService := services.NewDefaultUserService(userRepo, tokenAuth)
 	userHandler := handlers.NewUserHandler(userService)
 	eventRepo := repositories.NewEventRepository(db)
 	eventService := services.NewDefaultEventService(eventRepo)
@@ -64,11 +63,11 @@ func main() {
 	)
 	r.Mount("/api/v1", r)
 
-	jwtAuthMiddlewares := []func(http.Handler) http.Handler{ 
+	jwtAuthMiddlewares := []func(http.Handler) http.Handler{
 		jwtauth.Verifier(tokenAuth),
 		jwtauth.Authenticator(tokenAuth),
 	}
-	
+
 	r.Post("/auth/login", authHandler.Login)
 
 	// Public
@@ -80,7 +79,7 @@ func main() {
 	r.Route("/events", func(r chi.Router) {
 		r.With(jwtAuthMiddlewares...).Get("/{id}", eventHandler.GetEventByID)
 		r.Get("/", eventHandler.GetEvents)
-		r.Post("/", eventHandler.CreateEvent)
+		r.With(jwtAuthMiddlewares...).Post("/", eventHandler.CreateEvent)
 	})
 
 	r.Route("/tags", func(r chi.Router) {

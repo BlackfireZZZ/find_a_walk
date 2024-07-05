@@ -9,21 +9,29 @@ import (
 )
 
 type User struct {
-	ID    uuid.UUID `json:"id"`
-	Name  string    `json:"name"`
-	Email string    `json:"email"`
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Email    string    `json:"email"`
+	Password string    `json:"-"`
 }
 
 type UserIn struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
-func NewUser(name string, email string) User {
+type UserAuth struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func NewUser(name, password, email string) User {
 	return User{
-		ID:    uuid.New(),
-		Name:  name,
-		Email: email,
+		ID:       uuid.New(),
+		Name:     name,
+		Email:    email,
+		Password: password,
 	}
 }
 
@@ -36,6 +44,10 @@ func (a *UserIn) Bind(r *http.Request) error {
 		return errors.New("email incorrect")
 	}
 
+	return nil
+}
+
+func (a *UserAuth) Bind(r *http.Request) error {
 	return nil
 }
 

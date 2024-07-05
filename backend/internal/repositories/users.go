@@ -23,7 +23,7 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 func (r *UserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*domain.User, error) {
 	user := &domain.User{}
 
-	query := squirrel.Select("id", "name", "email").From("users").
+	query := squirrel.Select("id", "name", "email", "password").From("users").
 		Where(squirrel.Eq{"id": id}).
 		PlaceholderFormat(squirrel.Dollar)
 	stmt, args, error := query.ToSql()
@@ -33,7 +33,49 @@ func (r *UserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*domain
 	}
 
 	err := r.db.QueryRow(ctx, stmt, args...).
-		Scan(&user.ID, &user.Name, &user.Email)
+		Scan(&user.ID, &user.Name, &user.Email, &user.Password)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (r *UserRepository) IsUserExists(ctx context.Context, email string) (bool, error) {
+	query := squirrel.Select("COUNT(1)").
+		From("users").
+		Where(squirrel.Eq{"email": email}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	stmt, args, err := query.ToSql()
+	if err != nil {
+		return false, err
+	}
+
+	var result int
+	err = r.db.QueryRow(ctx, stmt, args...).Scan(&result)
+	if err != nil {
+		return false, err
+	}
+	if result > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
+	user := &domain.User{}
+
+	query := squirrel.Select("id", "name", "email", "password").From("users").
+		Where(squirrel.Eq{"email": email}).
+		PlaceholderFormat(squirrel.Dollar)
+	stmt, args, error := query.ToSql()
+
+	if error != nil {
+		return nil, error
+	}
+
+	err := r.db.QueryRow(ctx, stmt, args...).
+		Scan(&user.ID, &user.Name, &user.Email, &user.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -41,11 +83,10 @@ func (r *UserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*domain
 }
 
 func (r *UserRepository) CreateUser(ctx context.Context, user *domain.UserIn) (*domain.User, error) {
-	userSchema := domain.NewUser(user.Name, user.Email)
-
+	userSchema := domain.NewUser(user.Name, user.Password, user.Email)
 	query := squirrel.Insert("users").
-		Columns("id", "name", "email").
-		Values(userSchema.ID, userSchema.Name, userSchema.Email).
+		Columns("id", "name", "email", "password").
+		Values(userSchema.ID, userSchema.Name, userSchema.Email, userSchema.Password).
 		PlaceholderFormat(squirrel.Dollar)
 
 	stmt, args, err := query.ToSql()

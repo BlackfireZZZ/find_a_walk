@@ -74,6 +74,10 @@ func (r *EventRepository) CreateEvent(ctx context.Context, event *domain.EventIn
 		return nil, err
 	}
 
+	eventSchema.Tags, err = r.GetTagsByEventID(ctx, eventSchema.ID)
+	if err != nil {
+		return nil, err
+	}
 	log.Println("Created event: ", &eventSchema.ID)
 	return &eventSchema, nil
 }
@@ -138,6 +142,10 @@ func (r *EventRepository) GetEventByID(ctx context.Context, id uuid.UUID) (*doma
 			&event.StartLongitude, &event.EndLatitude,
 			&event.EndLongitude, &event.Date, &event.Capacity,
 			&event.MembersCount)
+	if err != nil {
+		return nil, err
+	}
+	event.Tags, err = r.GetTagsByEventID(ctx, event.ID)
 	if err != nil {
 		return nil, err
 	}

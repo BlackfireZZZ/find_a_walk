@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
 
@@ -12,8 +14,10 @@ import (
 )
 
 type UserService interface {
+	Login(ctx context.Context, user *domain.UserAuth) (*domain.Token, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.UserIn) (*domain.User, error)
+	GetJWTConfig() *jwtauth.JWTAuth
 }
 
 // Обработчики HTTP запросов
@@ -26,6 +30,13 @@ func NewUserHandler(service UserService) *UserHandler {
 }
 
 func (h *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
+	_, claims, err := jwtauth.FromContext(r.Context())
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
+		return
+	}
+	log.Println(claims)
+
 	id := chi.URLParam(r, "id")
 
 	userID, err := uuid.Parse(id)

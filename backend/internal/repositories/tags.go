@@ -3,6 +3,8 @@ package repositories
 import (
 	"context"
 	"find_a_walk/internal/domain"
+	"log"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
@@ -40,6 +42,7 @@ func (r *TagRepository) GetTags(ctx context.Context) ([]*domain.Tag, error) {
 }
 
 func (r *EventRepository) GetTagsByEventID(ctx context.Context, eventID uuid.UUID) ([]*domain.Tag, error) {
+	time_start := time.Now().UnixNano()
 	query := squirrel.Select("tags.*").
 		From("event_tags").
 		Join("tags ON tags.id = event_tags.tag_id").
@@ -61,7 +64,8 @@ func (r *EventRepository) GetTagsByEventID(ctx context.Context, eventID uuid.UUI
 	if err != nil {
 		return nil, err
 	}
-
+	time_end := time.Now().UnixNano()
+	log.Println("Passed: ", time_end - time_start)
 	return tags, nil
 }
 
