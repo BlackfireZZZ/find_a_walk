@@ -26,6 +26,10 @@ func init() {
 
 func main() {
 	// Connect to DB
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
 	db, err := pgxpool.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 
 	if err != nil {

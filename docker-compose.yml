@@ -1,17 +1,5 @@
 version: "1"
 services:
-  app:
-    build:
-      context: ../
-      dockerfile: backend/Dockerfile
-    environment:
-      DB_HOST: db
-      DB_NAME: postgres
-      DB_PASSWORD: PROD
-      DB_USER: postgres
-    depends_on:
-      db:
-        condition: service_healthy
   db:
     image: postgres:alpine3.19
     restart: always
@@ -29,6 +17,18 @@ services:
       - db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+  app:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DB_HOST: db
+      DB_NAME: postgres
+      DB_PASSWORD: PROD
+      DB_USER: postgres
+    depends_on:
+      db:
+        condition: service_healthy
   nginx:
     image: production-stage
     build:
@@ -40,6 +40,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - app
+      app:
+        condition: service_healthy
 volumes:
   db-data:
