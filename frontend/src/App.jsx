@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import Profile from './components/Profile';
-import { EventComponent } from './components/Event';
-import YandexMap from './components/YandexMap';
+import User from './components/User';
+import Profile from './components/Profile.jsx';
+import { Event, EventComponent, NewEvent } from './components/Event.jsx';
+import YandexMap from './components/YandexMap.jsx';
 
 const users = [
     new User('Chinese developers Team', [1, 7, 2024], [
@@ -12,7 +13,6 @@ const users = [
 ];
 
 const loggedUser = users[0];
-
 function App() {
     const [events, setEvents] = useState([]);
     const [bounds, setBounds] = useState({ lon1: 0, lat1: 0, lon2: 0, lat2: 0 });
@@ -42,17 +42,17 @@ function App() {
     return (
         <div className="App">
             <header className="App-header">
-                <h3>Events and User Profile</h3>
             </header>
             <main>
                 <Profile user={loggedUser} />
-                <div className="main-content">
+                <div className="App-header">
                     <YandexMap onBoundsChange={setBounds} />
                     <div id="CurrentEvents">
                         {events.map((event, index) => (
                             <EventComponent key={index} event={event} />
                         ))}
                     </div>
+                    <NewEvent />
                 </div>
             </main>
         </div>
