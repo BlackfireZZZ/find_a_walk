@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
@@ -51,7 +52,7 @@ func main() {
 
 	authHandler := handlers.NewAuthHandler(userService)
 
-	go cleaner(eventService, 5*time.Minute)
+	go cleaner(eventService, 60 * time.Minute)
 	// Setting routes
 	r := chi.NewRouter()
 
