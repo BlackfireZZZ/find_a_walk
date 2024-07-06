@@ -76,9 +76,27 @@ paths:
           description: Invalid request body
         '500':
           description: Internal server error
+  /tags:
+    get:
+      summary: Get all tags
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
 
 components:
   schemas:
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          format: string
+        name:
+          type: string
     Event:
       type: object
       properties:

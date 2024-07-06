@@ -20,8 +20,6 @@ import (
 	"find_a_walk/internal/services"
 )
 
-var tokenAuth *jwtauth.JWTAuth
-
 func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found")
@@ -39,20 +37,19 @@ func main() {
 
 	tokenAuth := jwtauth.New(os.Getenv("TOKEN_ALG"), []byte(os.Getenv("SECRET_TOKEN")), nil)
 
-	// Connect dependencies
-	userRepo := repositories.NewUserRepository(db)
-	userService := services.NewDefaultUserService(userRepo, tokenAuth)
-	userHandler := handlers.NewUserHandler(userService)
-	eventRepo := repositories.NewEventRepository(db)
-	eventService := services.NewDefaultEventService(eventRepo)
-	eventHandler := handlers.NewEventHandler(eventService)
-	tagRepo := repositories.NewTagRepository(db)
-	tagService := services.NewDefaultTagService(tagRepo)
-	tagHandler := handlers.NewTagsHandler(tagService)
+	repositories := repositories.InitRepositores(db)
+	services := services.InitServices(
+		&repositories.UserRepository,
+		tokenAuth,
+		&repositories.EventRepository,
+		&repositories.TagRepository)
+	handlers := handlers.InitHandlers(
+		&services.UserService,
+		&services.EventService,
+		&services.TagService,
+	)
 
-	authHandler := handlers.NewAuthHandler(userService)
-
-	go cleaner(eventService, 60 * time.Minute)
+	go cleaner(&services.EventService, 60*time.Minute)
 	// Setting routes
 	r := chi.NewRouter()
 
@@ -70,22 +67,22 @@ func main() {
 		jwtauth.Authenticator(tokenAuth),
 	}
 
-	r.Post("/auth/login", authHandler.Login)
+	r.Post("/auth/login", handlers.AuthHandler.Login)
 
 	// Public
 	r.Route("/users", func(r chi.Router) {
-		r.With(jwtAuthMiddlewares...).Get("/{id}", userHandler.GetUserByID)
-		r.Post("/", userHandler.CreateUser)
+		r.With(jwtAuthMiddlewares...).Get("/{id}", handlers.UserHandler.GetUserByID)
+		r.Post("/", handlers.UserHandler.CreateUser)
 	})
 
 	r.Route("/events", func(r chi.Router) {
-		r.With(jwtAuthMiddlewares...).Get("/{id}", eventHandler.GetEventByID)
-		r.Get("/", eventHandler.GetEvents)
-		r.With(jwtAuthMiddlewares...).Post("/", eventHandler.CreateEvent)
+		r.With(jwtAuthMiddlewares...).Get("/{id}", handlers.EventHandler.GetEventByID)
+		r.Get("/", handlers.EventHandler.GetEvents)
+		r.With(jwtAuthMiddlewares...).Post("/", handlers.EventHandler.CreateEvent)
 	})
 
 	r.Route("/tags", func(r chi.Router) {
-		r.Get("/", tagHandler.GetTags)
+		r.Get("/", handlers.TagsHandler.GetTags)
 	})
 
 	// Start HTTP server

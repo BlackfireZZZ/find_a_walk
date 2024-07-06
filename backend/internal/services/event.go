@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"find_a_walk/internal/domain"
+
 	"github.com/google/uuid"
 )
 
@@ -12,8 +13,6 @@ type EventRepository interface {
 	GetEvents(ctx context.Context, tags []string) ([]*domain.Event, error)
 	GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64, tags []string) ([]*domain.Event, error)
 	DeleteExpiredEvents(ctx context.Context) error
-	// GetEventTags(ctx context.Context, id uuid.UUID) ([]*domain.Tag, error)
-	// GetEventMembers(ctx context.Context, eventID int) ([]*domain.User, error)
 }
 
 // Реализация сервиса

@@ -84,13 +84,30 @@ func (r *EventRepository) CreateEvent(ctx context.Context, event *domain.EventIn
 	return &eventSchema, nil
 }
 
+func TagsToString(tags []string) string {
+	stringTags := "("
+	for i, tag := range tags {
+		log.Println(i)
+		if len(tags) == i + 1 {
+			stringTags += fmt.Sprintf("'%s'", tag)
+		} else {
+			stringTags += fmt.Sprintf("'%s',", tag)
+		}
+	}
+	stringTags += ")"
+	return stringTags
+}
+
 func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*domain.Event, error) {
 	query := squirrel.
-		Select("events.*", "count(members.event_id) as members_count").
+		Select("distinct events.*", "count(members.event_id) as members_count").
 		From("events").
 		JoinClause("FULL JOIN members ON members.event_id = events.id").
+		InnerJoin("event_tags ON event_tags.event_id = events.id").
+		Where(fmt.Sprintf("event_tags.tag_id in %s AND event_tags.event_id = events.id", TagsToString(tags))).
 		GroupBy("events.id").
 		PlaceholderFormat(squirrel.Dollar)
+
 	stmt, args, error := query.ToSql()
 	log.Println(stmt)
 
@@ -157,18 +174,12 @@ func (r *EventRepository) GetEventByID(ctx context.Context, id uuid.UUID) (*doma
 func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64, tags []string) ([]*domain.Event, error) {
 	result := []*domain.Event{}
 
-	stringTags := "("
-	for _, tag := range tags {
-		stringTags += fmt.Sprintf("'%s',", tag)
-	}
-	stringTags += ")"
-
 	query := squirrel.
 		Select("distinct events.*", "count(members.event_id) as members_count").
 		From("events").
 		JoinClause("FULL JOIN members ON members.event_id = events.id").
 		InnerJoin("event_tags ON event_tags.event_id = events.id").
-		Where(fmt.Sprintf("event_tags.tag_id = %s AND event_tags.event_id = events.id", tags)).
+		Where(fmt.Sprintf("event_tags.tag_id = %s AND event_tags.event_id = events.id", TagsToString(tags))).
 		GroupBy("events.id").
 		PlaceholderFormat(squirrel.Dollar)
 
