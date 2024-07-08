@@ -25,7 +25,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - backend_data:/app_data
     environment:
       DB_HOST: db
       DB_NAME: postgres
@@ -49,3 +49,5 @@ services:
         condition: service_healthy
 volumes:
   db-data:
+  backend_data:
+    driver: local
