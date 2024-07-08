@@ -2,23 +2,29 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/jwtauth/v5"
 
 	"github.com/go-chi/render"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
 
+	"embed"
 	"find_a_walk/internal/handlers"
 	"find_a_walk/internal/repositories"
 	"find_a_walk/internal/services"
+
+	"github.com/pressly/goose/v3"
 )
+
+var embedMigrations embed.FS
 
 func init() {
 	if err := godotenv.Load(); err != nil {
@@ -29,27 +35,41 @@ func init() {
 func main() {
 	// Connect to DB
 	db, err := pgxpool.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	defer db.Close()
+
+	//  Migrations
+	connectionString := "host=localhost port=5432 user=postgres password=PROD dbname=postgres sslmode=disable"
+	migrationDb, err := sql.Open("postgres", connectionString)
+	goose.SetBaseFS(embedMigrations)
+
+	if err := goose.SetDialect("postgres"); err != nil {
+		panic(err)
+	}
+
+	if err := goose.Up(migrationDb, "backend/migrations"); err != nil {
+		panic(err)
+	}
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	migrationDb.Close()
 
 	tokenAuth := jwtauth.New(os.Getenv("TOKEN_ALG"), []byte(os.Getenv("SECRET_TOKEN")), nil)
 
-	repositories := repositories.InitRepositores(db)
-	services := services.InitServices(
-		&repositories.UserRepository,
+	mainRepositories := repositories.InitRepositores(db)
+	mainServices := services.InitServices(
+		&mainRepositories.UserRepository,
 		tokenAuth,
-		&repositories.EventRepository,
-		&repositories.TagRepository)
-	handlers := handlers.InitHandlers(
-		&services.UserService,
-		&services.EventService,
-		&services.TagService,
+		&mainRepositories.EventRepository,
+		&mainRepositories.TagRepository)
+	mainHandlers := handlers.InitHandlers(
+		&mainServices.UserService,
+		&mainServices.EventService,
+		&mainServices.TagService,
 	)
 
-	go cleaner(&services.EventService, 60*time.Minute)
+	go cleaner(&mainServices.EventService, 60*time.Minute)
 	// Setting routes
 	r := chi.NewRouter()
 
@@ -67,22 +87,22 @@ func main() {
 		jwtauth.Authenticator(tokenAuth),
 	}
 
-	r.Post("/auth/login", handlers.AuthHandler.Login)
+	r.Post("/auth/login", mainHandlers.AuthHandler.Login)
 
 	// Public
 	r.Route("/users", func(r chi.Router) {
-		r.With(jwtAuthMiddlewares...).Get("/{id}", handlers.UserHandler.GetUserByID)
-		r.Post("/", handlers.UserHandler.CreateUser)
+		r.With(jwtAuthMiddlewares...).Get("/{id}", mainHandlers.UserHandler.GetUserByID)
+		r.Post("/", mainHandlers.UserHandler.CreateUser)
 	})
 
 	r.Route("/events", func(r chi.Router) {
-		r.With(jwtAuthMiddlewares...).Get("/{id}", handlers.EventHandler.GetEventByID)
-		r.Get("/", handlers.EventHandler.GetEvents)
-		r.With(jwtAuthMiddlewares...).Post("/", handlers.EventHandler.CreateEvent)
+		r.With(jwtAuthMiddlewares...).Get("/{id}", mainHandlers.EventHandler.GetEventByID)
+		r.Get("/", mainHandlers.EventHandler.GetEvents)
+		r.With(jwtAuthMiddlewares...).Post("/", mainHandlers.EventHandler.CreateEvent)
 	})
 
 	r.Route("/tags", func(r chi.Router) {
-		r.Get("/", handlers.TagsHandler.GetTags)
+		r.Get("/", mainHandlers.TagsHandler.GetTags)
 	})
 
 	// Start HTTP server
