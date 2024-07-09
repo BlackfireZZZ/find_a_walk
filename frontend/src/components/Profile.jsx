@@ -1,36 +1,32 @@
 import React from 'react';
+import './App.css';
+import User from './components/User';
+import {Profile, users, loggedUser} from './components/Profile.jsx';
+import { Event, EventComponent, NewEvent, NewEventPanelShow, events } from './components/Event.jsx';
+import YandexMap from './components/YandexMap.jsx';
 
-function ContactAdd(){
-    
+function App() {
+    return (
+        <div className="App">
+            <header className="App-header">
+                <h3 style={{display: 'inline-block'}}>Find the walk.</h3>
+                <p style={{display: 'inline-block'}}>Powered by Chinese Developers</p>
+                <input type="button" value="+ New event" onClick={NewEventPanelShow}></input>
+            </header>
+            <main>
+                <Profile user={loggedUser} />
+                <div style={{display: 'inline-block', width: '78%'}}>
+                    <YandexMap />
+                    <div id="CurrentEvents" style={{}}>
+                    {events.map((event, index) => (
+                        <EventComponent key={index} event={event} />
+                    ))}
+                    </div>
+                    <NewEvent />
+                </div>
+            </main>
+        </div>
+    );
 }
 
-const Profile = ({ user }) => (
-    <div id="Profile" style={{display: 'inline-block'}}>
-        <div id="username"><h3>{user.nickname}</h3></div>
-        <p style={{margin: '-15px 0 10px 0'}}>Nickname</p>
-        <div id="userage"><h3>{user.getAge()} y.o.</h3></div>
-        <p style={{margin: '-15px 0 10px 0'}}>Age</p>
-        <div id="usercontacts" style={{padding: "10px"}}>
-            {user.contacts.map((contact, index) => (
-                <div
-                    key={index}
-                    style={{ borderRadius: '20px', backgroundColor: 'grey', padding: '1px'}}
-                >
-                    <h5 style={{ color: 'white'}}>{contact}</h5>
-                </div>
-            ))}
-            <input 
-            id = "contact_input"
-            type="placeholder" 
-            placeholder="Phone, Telegram, E-mail e.t.c..."
-            style = {{width: "98%"}}></input>
-            <input 
-            type="button" 
-            value="+ Add new contact"
-            style = {{width: "98%"}}
-            onClick={ContactAdd()}></input>
-        </div>
-    </div>
-);
-
-export default Profile;
+export default App;

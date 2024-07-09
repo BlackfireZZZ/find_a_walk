@@ -4,7 +4,7 @@ header{
     font-family: Arial;
 }
 #Profile{
-    height: 685px;
+    height: 91vh;
     width: 20%;
     display: inline-block;
     background-color:rgb(200, 200, 200);
@@ -18,22 +18,22 @@ header{
     padding: 10px;
 }
 #CurrentEvents{
-    width: 76%;
-    height: auto;
+    width: 77%;
+    height: 40vh;
     position: absolute;
     bottom: 0;
-    background-color:rgb(200, 200, 200);
+    background-color:rgb(223, 223, 223);
     margin: 0;
     padding: 10px;
 }
 #CreateEvent {
     display: none;
-    width: 76%;
+    width: 77%;
     height: 40vh;
     position: absolute;
     bottom: 0;
-    background-color:rgb(200, 200, 200);
-    margin: 5px;
+    background-color:rgb(223, 223, 223);
+    margin: 0;
     padding: 10px;
 }
 .Event{
@@ -53,10 +53,22 @@ header{
 .ToGoButton:hover {
     background-color: rgb(2, 182, 182);
 }
+.NegativeButton {
+    width: auto;
+    padding: 5px 20px 5px 20px;
+    font-size: 20px;
+    background-color: rgb(206, 47, 47);
+    color: white;
+    border-radius: 10px;
+}
+.NegativeButton:hover {
+    background-color: rgb(255, 94, 0);
+}
 .ContactElement{
     border-radius: 20px; 
     background-color: grey; 
     padding: 1px; 
-    margin: 5px; 
+    margin: 5px;
+    margin-top: 10px; 
     width: 80%
 }
