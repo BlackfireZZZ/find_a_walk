@@ -27,13 +27,9 @@ services:
     volumes:
       - backend_data:/app_data
     environment:
-      DB_HOST: db
-      DB_NAME: postgres
-      DB_PASSWORD: PROD
-      DB_USER: postgres
+      env_file: ".back_env"
     depends_on:
-      db:
-        condition: service_healthy
+      - db
   nginx:
     build:
       context: .
@@ -45,8 +41,15 @@ services:
     ports:
       - "80:80"
     depends_on:
-      app:
-        condition: service_healthy
+      - app
+  migrations:
+    build:
+      context: .
+      dockerfile: migrations/Dockerfile
+    depends_on:
+      - db
+    environment:
+      env_file: ".migrations_env"
 volumes:
   db-data:
   backend_data:

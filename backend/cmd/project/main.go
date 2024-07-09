@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"database/sql"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
@@ -20,8 +20,6 @@ import (
 	"find_a_walk/internal/handlers"
 	"find_a_walk/internal/repositories"
 	"find_a_walk/internal/services"
-
-	"github.com/pressly/goose/v3"
 )
 
 var embedMigrations embed.FS
@@ -35,25 +33,10 @@ func init() {
 func main() {
 	// Connect to DB
 	db, err := pgxpool.Connect(context.Background(), os.Getenv("DATABASE_URL"))
-	defer db.Close()
-
-	//  Migrations
-	connectionString := "host=localhost port=5432 user=postgres password=PROD dbname=postgres sslmode=disable"
-	migrationDb, err := sql.Open("postgres", connectionString)
-	goose.SetBaseFS(embedMigrations)
-
-	if err := goose.SetDialect("postgres"); err != nil {
-		panic(err)
-	}
-
-	if err := goose.Up(migrationDb, "backend/migrations"); err != nil {
-		panic(err)
-	}
-
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
-	migrationDb.Close()
+	defer db.Close()
 
 	tokenAuth := jwtauth.New(os.Getenv("TOKEN_ALG"), []byte(os.Getenv("SECRET_TOKEN")), nil)
 
