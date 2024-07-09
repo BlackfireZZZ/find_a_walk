@@ -12,7 +12,7 @@ type ErrResponse struct {
 }
 
 type OKResponse struct {
-	Status         string `json:"error"`
+	Status         string `json:"status"`
 	HTTPStatusCode int    `json:"-"`
 }
 
@@ -21,11 +21,16 @@ func (e *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-
-
 func (e *OKResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	render.Status(r, e.HTTPStatusCode)
 	return nil
+}
+
+func OKRequest(status string, statusCode int) render.Renderer {
+	return &OKResponse{
+		Status:         status,
+		HTTPStatusCode: statusCode,
+	}
 }
 
 func ErrInvalidRequest(err error, statusCode int) render.Renderer {

@@ -16,6 +16,7 @@ import (
 type EventService interface {
 	GetEventByID(ctx context.Context, id uuid.UUID) (*domain.Event, error)
 	CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error)
+	DeleteEvent(ctx context.Context, id uuid.UUID, userID uuid.UUID) error
 	GetEvents(ctx context.Context, tags []string) ([]*domain.Event, error)
 	GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64, tags []string) ([]*domain.Event, error)
 }
@@ -26,6 +27,31 @@ type EventHandler struct {
 
 func NewEventHandler(service EventService) *EventHandler {
 	return &EventHandler{service: service}
+}
+
+func (h *EventHandler) DeleteEvent(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	var eventID uuid.UUID
+	var err error
+	if eventID, err = uuid.Parse(id); err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
+		return
+	}
+
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusUnauthorized))
+		return
+	}
+
+	err = h.service.DeleteEvent(r.Context(), eventID, userID)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
+		return
+	}
+
+	render.Render(w, r, domain.OKRequest("ok", http.StatusNoContent))
 }
 
 func (h *EventHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
@@ -44,12 +70,14 @@ func (h *EventHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 		events, err := h.service.GetEventsByAnglesCoordinates(r.Context(), coordinates[0], coordinates[1], coordinates[2], coordinates[3], tags)
 		if err != nil {
 			render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusInternalServerError))
+			return
 		}
 		render.RenderList(w, r, newEventList(events))
 	} else {
 		events, err := h.service.GetEvents(r.Context(), tags)
 		if err != nil {
 			render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusInternalServerError))
+			return
 		}
 		render.RenderList(w, r, newEventList(events))
 	}
@@ -82,21 +110,29 @@ func (h *EventHandler) GetEventByID(w http.ResponseWriter, r *http.Request) {
 	render.Render(w, r, event)
 }
 
-func (h *EventHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
-
+func getUserIDFromContext(r *http.Request) (uuid.UUID, error) {
 	_, claims, err := jwtauth.FromContext(r.Context())
+
 	if err != nil {
-		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusNotFound))
-		return
+		return uuid.UUID{}, err
 	}
 
 	userID, err := uuid.Parse(fmt.Sprintf("%v", claims["user_id"]))
 	if err != nil {
-		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusNotFound))
+		return uuid.UUID{}, err
+	}
+	return userID, nil
+
+}
+
+func (h *EventHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusUnauthorized))
 		return
 	}
-	event := &domain.EventIn{}
-	event.AuthorID = userID
+
+	event := &domain.EventIn{AuthorID: userID}
 
 	if err = render.Bind(r, event); err != nil {
 		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))

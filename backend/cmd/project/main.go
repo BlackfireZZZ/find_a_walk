@@ -79,9 +79,10 @@ func main() {
 	})
 
 	r.Route("/events", func(r chi.Router) {
+		r.With(jwtAuthMiddlewares...).Delete("/{id}", handlers.EventHandler.DeleteEvent)
 		r.With(jwtAuthMiddlewares...).Get("/{id}", handlers.EventHandler.GetEventByID)
-		r.Get("/", handlers.EventHandler.GetEvents)
 		r.With(jwtAuthMiddlewares...).Post("/", handlers.EventHandler.CreateEvent)
+		r.Get("/", handlers.EventHandler.GetEvents)
 	})
 
 	r.Route("/tags", func(r chi.Router) {

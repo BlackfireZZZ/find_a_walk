@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"find_a_walk/internal/domain"
 
 	"github.com/google/uuid"
@@ -10,6 +11,7 @@ import (
 type EventRepository interface {
 	GetEventByID(ctx context.Context, id uuid.UUID) (*domain.Event, error)
 	CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error)
+	DeleteEvent(ctx context.Context, id uuid.UUID) error
 	GetEvents(ctx context.Context, tags []string) ([]*domain.Event, error)
 	GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64, tags []string) ([]*domain.Event, error)
 	DeleteExpiredEvents(ctx context.Context) error
@@ -22,6 +24,19 @@ type EventService struct {
 
 func NewDefaultEventService(repo EventRepository) *EventService {
 	return &EventService{repo: repo}
+}
+
+func (s *EventService) DeleteEvent(ctx context.Context, id uuid.UUID, userID uuid.UUID) error {
+	event, err := s.repo.GetEventByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if event.AuthorID != userID {
+		return errors.New("you`re not the author of this event")
+	}
+
+	return s.repo.DeleteEvent(ctx, id)
 }
 
 func (s *EventService) GetEventByID(ctx context.Context, id uuid.UUID) (*domain.Event, error) {

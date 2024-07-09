@@ -84,6 +84,22 @@ func (r *EventRepository) CreateEvent(ctx context.Context, event *domain.EventIn
 	return &eventSchema, nil
 }
 
+func (r *EventRepository) DeleteEvent(ctx context.Context, id uuid.UUID) error {
+	query := squirrel.Delete("events").
+		Where(squirrel.Eq{"id": id}).
+		PlaceholderFormat(squirrel.Dollar)
+	stmt, args, err := query.ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.Exec(ctx, stmt, args...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*domain.Event, error) {
 	query := squirrel.
 		Select("distinct events.*", "count(members.event_id) as members_count").
