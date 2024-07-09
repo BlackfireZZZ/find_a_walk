@@ -3,10 +3,12 @@ package handlers
 import (
 	"context"
 	"find_a_walk/internal/domain"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
 )
@@ -81,9 +83,21 @@ func (h *EventHandler) GetEventByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *EventHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
-	event := &domain.EventIn{}
 
-	var err error
+	_, claims, err := jwtauth.FromContext(r.Context())
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusNotFound))
+		return
+	}
+
+	userID, err := uuid.Parse(fmt.Sprintf("%v", claims["user_id"]))
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusNotFound))
+		return
+	}
+	event := &domain.EventIn{}
+	event.AuthorID = userID
+
 	if err = render.Bind(r, event); err != nil {
 		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
 		return

@@ -72,6 +72,9 @@ func main() {
 	// Public
 	r.Route("/users", func(r chi.Router) {
 		r.With(jwtAuthMiddlewares...).Get("/{id}", handlers.UserHandler.GetUserByID)
+		r.With(jwtAuthMiddlewares...).Get("/me", handlers.UserHandler.GetUserProfile)
+		r.With(jwtAuthMiddlewares...).Post("/interests", handlers.UserHandler.CreateInterest)
+		r.With(jwtAuthMiddlewares...).Delete("/interests", handlers.UserHandler.DeleteInterests)
 		r.Post("/", handlers.UserHandler.CreateUser)
 	})
 
