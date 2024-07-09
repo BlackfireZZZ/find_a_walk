@@ -105,16 +105,15 @@ func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*doma
 		Select("distinct events.*", "count(members.event_id) as members_count").
 		From("events").
 		JoinClause("FULL JOIN members ON members.event_id = events.id").
-		InnerJoin("event_tags ON event_tags.event_id = events.id").
-		Where(squirrel.And{
-			squirrel.Eq{"event_tags.tag_id": tags},
-			squirrel.Eq{"event_tags.event_id": "events.id"},
-		}).
 		GroupBy("events.id").
 		PlaceholderFormat(squirrel.Dollar)
 
+	if len(tags) > 0 {
+		query = query.InnerJoin("event_tags ON event_tags.event_id = events.id").
+			Where(squirrel.Eq{"event_tags.tag_id": tags})
+
+	}
 	stmt, args, error := query.ToSql()
-	log.Println(stmt)
 
 	if error != nil {
 		return nil, error
