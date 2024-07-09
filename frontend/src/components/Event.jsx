@@ -76,16 +76,16 @@ const NewEventAdd = () => {
     let date = document.getElementById('date_input').value;
 }
 const NewEvent = () => (
-    <div id='CreateEvent'>
+    <div id="CreateEvent" style={{ display: 'none' }}>
         <div>
             <h1 style={{display: 'inline-block'}}>Создание нового события</h1>
             <input type="button" value="X" className='NegativeButton' onClick={NewEventPanelHide}></input>
         </div>
-        <div style={{display: 'inline-block', verticalAlign: 'top'}}>
-            <input id="name_input" type="search" placeholder='Название'></input>
-            <br></br>
-            <input id="date_input" type="search" placeholder='Время сбора'></input>
-            <br></br>
+        <div style={{ display: 'inline-block', verticalAlign: 'top' }}>
+            <input id="name_input" type="search" placeholder="Название" />
+            <br />
+            <input id="date_input" type="search" placeholder="Время сбора" />
+            <br />
             <p>Точка сбора</p>
         </div>
         <div style={{display: 'inline-block'}}>
@@ -100,8 +100,7 @@ const NewEvent = () => (
             <br></br>
             <input type="submit" placeholder='Опубликовать' className='ToGoButton' onClick={NewEventAdd}></input>
         </div>
-        
     </div>
-)
+);
 
 export { Event, EventComponent, NewEvent, NewEventPanelShow, events };

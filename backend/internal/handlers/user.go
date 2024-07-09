@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
 
@@ -12,8 +13,10 @@ import (
 )
 
 type UserService interface {
+	Login(ctx context.Context, user *domain.UserAuth) (*domain.Token, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.UserIn) (*domain.User, error)
+	GetJWTConfig() *jwtauth.JWTAuth
 }
 
 // Обработчики HTTP запросов

@@ -39,14 +39,14 @@ func NewEvent(authorID uuid.UUID, startLongitude float64,
 }
 
 type EventIn struct {
-	AuthorID       uuid.UUID   `json:"author_id"`
-	StartLongitude float64     `json:"start_longitude"`
-	StartLatitude  float64     `json:"start_latitude"`
-	EndLongitude   float64     `json:"end_longitude"`
-	EndLatitude    float64     `json:"end_latitude"`
-	Date           time.Time   `json:"date"`
-	Capacity       int         `json:"capacity"`
-	Tags           []string `json:"tags"`
+	AuthorID       uuid.UUID `json:"author_id"`
+	StartLongitude float64   `json:"start_longitude"`
+	StartLatitude  float64   `json:"start_latitude"`
+	EndLongitude   float64   `json:"end_longitude"`
+	EndLatitude    float64   `json:"end_latitude"`
+	Date           time.Time `json:"date"`
+	Capacity       int       `json:"capacity"`
+	Tags           []string  `json:"tags"`
 }
 
 func (a *EventIn) Bind(r *http.Request) error {

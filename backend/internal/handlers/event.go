@@ -16,8 +16,6 @@ type EventService interface {
 	CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error)
 	GetEvents(ctx context.Context, tags []string) ([]*domain.Event, error)
 	GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64, tags []string) ([]*domain.Event, error)
-	// GetEventTags(ctx context.Context, id int) ([]*domain.Tag, error)
-	// GetEventMembers(ctx context.Context, eventID int) ([]*domain.User, error)
 }
 
 type EventHandler struct {
@@ -66,7 +64,7 @@ func newEventList(events []*domain.Event) []render.Renderer {
 func (h *EventHandler) GetEventByID(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	eventID := uuid.New()
+	var eventID uuid.UUID
 	var err error
 	if eventID, err = uuid.Parse(id); err != nil {
 		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))

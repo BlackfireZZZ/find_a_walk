@@ -2,21 +2,27 @@ package main
 
 import (
 	"context"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/jwtauth/v5"
+
 	"github.com/go-chi/render"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
 
+	"embed"
 	"find_a_walk/internal/handlers"
 	"find_a_walk/internal/repositories"
 	"find_a_walk/internal/services"
 )
+
+var embedMigrations embed.FS
 
 func init() {
 	if err := godotenv.Load(); err != nil {
@@ -26,31 +32,30 @@ func init() {
 
 func main() {
 	// Connect to DB
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(err)
-	}
 	db, err := pgxpool.Connect(context.Background(), os.Getenv("DATABASE_URL"))
-
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 
-	// Connect dependencies
-	userRepo := repositories.NewUserRepository(db)
-	userService := services.NewDefaultUserService(userRepo)
-	userHandler := handlers.NewUserHandler(userService)
-	eventRepo := repositories.NewEventRepository(db)
-	eventService := services.NewDefaultEventService(eventRepo)
-	eventHandler := handlers.NewEventHandler(eventService)
-	tagRepo := repositories.NewTagRepository(db)
-	tagService := services.NewDefaultTagService(tagRepo)
-	tagHandler := handlers.NewTagsHandler(tagService)
+	tokenAuth := jwtauth.New(os.Getenv("TOKEN_ALG"), []byte(os.Getenv("SECRET_TOKEN")), nil)
 
-	go cleaner(eventService, 5*time.Minute)
+	mainRepositories := repositories.InitRepositores(db)
+	mainServices := services.InitServices(
+		&mainRepositories.UserRepository,
+		tokenAuth,
+		&mainRepositories.EventRepository,
+		&mainRepositories.TagRepository)
+	mainHandlers := handlers.InitHandlers(
+		&mainServices.UserService,
+		&mainServices.EventService,
+		&mainServices.TagService,
+	)
+
+	go cleaner(&mainServices.EventService, 60*time.Minute)
 	// Setting routes
 	r := chi.NewRouter()
+
 	r.Use(
 		render.SetContentType(render.ContentTypeJSON),
 		middleware.Logger,
@@ -59,19 +64,28 @@ func main() {
 		middleware.Recoverer,
 	)
 	r.Mount("/api/v1", r)
+
+	jwtAuthMiddlewares := []func(http.Handler) http.Handler{
+		jwtauth.Verifier(tokenAuth),
+		jwtauth.Authenticator(tokenAuth),
+	}
+
+	r.Post("/auth/login", mainHandlers.AuthHandler.Login)
+
+	// Public
 	r.Route("/users", func(r chi.Router) {
-		r.Get("/{id}", userHandler.GetUserByID)
-		r.Post("/", userHandler.CreateUser)
+		r.With(jwtAuthMiddlewares...).Get("/{id}", mainHandlers.UserHandler.GetUserByID)
+		r.Post("/", mainHandlers.UserHandler.CreateUser)
 	})
 
 	r.Route("/events", func(r chi.Router) {
-		r.Get("/{id}", eventHandler.GetEventByID)
-		r.Get("/", eventHandler.GetEvents)
-		r.Post("/", eventHandler.CreateEvent)
+		r.With(jwtAuthMiddlewares...).Get("/{id}", mainHandlers.EventHandler.GetEventByID)
+		r.Get("/", mainHandlers.EventHandler.GetEvents)
+		r.With(jwtAuthMiddlewares...).Post("/", mainHandlers.EventHandler.CreateEvent)
 	})
 
 	r.Route("/tags", func(r chi.Router) {
-		r.Get("/", tagHandler.GetTags)
+		r.Get("/", mainHandlers.TagsHandler.GetTags)
 	})
 
 	// Start HTTP server
