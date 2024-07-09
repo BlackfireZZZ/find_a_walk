@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"find_a_walk/internal/domain"
-	"fmt"
 	"log"
 	"time"
 
@@ -24,7 +23,7 @@ func NewEventRepository(db *pgxpool.Pool) *EventRepository {
 
 func (r *EventRepository) CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error) {
 	eventSchema := domain.NewEvent(event.AuthorID, event.StartLongitude,
-		event.StartLongitude, event.EndLatitude, event.EndLongitude,
+		event.StartLatitude, event.EndLatitude, event.EndLongitude,
 		event.Date, event.Capacity)
 
 	query_events := squirrel.Insert("events").
@@ -111,7 +110,6 @@ func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*doma
 	if len(tags) > 0 {
 		query = query.InnerJoin("event_tags ON event_tags.event_id = events.id").
 			Where(squirrel.Eq{"event_tags.tag_id": tags})
-
 	}
 	stmt, args, error := query.ToSql()
 
@@ -182,19 +180,21 @@ func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1
 		Select("distinct events.*", "count(members.event_id) as members_count").
 		From("events").
 		JoinClause("FULL JOIN members ON members.event_id = events.id").
-		InnerJoin("event_tags ON event_tags.event_id = events.id").
-		Where(fmt.Sprintf("event_tags.tag_id = %s AND event_tags.event_id = events.id", TagsToString(tags))).
 		GroupBy("events.id").
-		PlaceholderFormat(squirrel.Dollar)
-
-	stmt, args, err := query.
 		Where(squirrel.And{
 			squirrel.GtOrEq{"start_longitude": lon1},
 			squirrel.LtOrEq{"start_longitude": lon2},
 			squirrel.GtOrEq{"start_latitude": lat1},
 			squirrel.LtOrEq{"start_latitude": lat2},
 		}).
-		ToSql()
+		PlaceholderFormat(squirrel.Dollar)
+
+	if len(tags) > 0 {
+		query = query.InnerJoin("event_tags ON event_tags.event_id = events.id").
+			Where(squirrel.Eq{"event_tags.tag_id": tags})
+	}
+
+	stmt, args, err := query.ToSql()
 
 	if err != nil {
 		return nil, err
