@@ -7,8 +7,6 @@ import (
 	"os"
 	"time"
 
-	_ "github.com/lib/pq"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/jwtauth/v5"
@@ -17,13 +15,10 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
 
-	"embed"
 	"find_a_walk/internal/handlers"
 	"find_a_walk/internal/repositories"
 	"find_a_walk/internal/services"
 )
-
-var embedMigrations embed.FS
 
 func init() {
 	if err := godotenv.Load(); err != nil {
@@ -93,7 +88,6 @@ func main() {
 		r.Get("/", mainHandlers.TagsHandler.GetTags)
 	})
 
-	// Start HTTP server
 	log.Println("Starting server on: ", os.Getenv("SERVER_ADRESS"))
 	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_ADRESS"), r))
 }
