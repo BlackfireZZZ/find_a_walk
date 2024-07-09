@@ -25,27 +25,32 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - backend_data:/app_data
     environment:
-      DB_HOST: db
-      DB_NAME: postgres
-      DB_PASSWORD: PROD
-      DB_USER: postgres
+      env_file: ".back_env"
     depends_on:
-      db:
-        condition: service_healthy
+      - db
   nginx:
-    image: production-stage
     build:
       context: .
       dockerfile: nginx/Dockerfile
+    container_name: nginx
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     restart: on-failure
     ports:
       - "80:80"
     depends_on:
-      app:
-        condition: service_healthy
+      - app
+  migrations:
+    build:
+      context: .
+      dockerfile: migrations/Dockerfile
+    depends_on:
+      - db
+    environment:
+      env_file: ".migrations_env"
 volumes:
   db-data:
+  backend_data:
+    driver: local

@@ -13,4 +13,6 @@ EXPOSE 8010
 
 FROM gcr.io/distroless/static-debian12
 COPY --from=build /go/bin/app /
+COPY backend/.env /
+COPY backend/migrations /migrations
 CMD ["/app"]
