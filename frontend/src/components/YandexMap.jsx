@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import {events} from './Event.jsx';
 
-const YandexMap = ({ onBoundsChange }) => {
+const YandexMap = () => {
     useEffect(() => {
         const loadScript = (url) => {
             return new Promise((resolve, reject) => {
@@ -12,7 +13,6 @@ const YandexMap = ({ onBoundsChange }) => {
                 document.body.appendChild(script);
             });
         };
-
         loadScript("https://api-maps.yandex.ru/2.1/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&lang=ru_RU")
             .then(() => {
                 window.ymaps.ready(() => {
@@ -20,22 +20,24 @@ const YandexMap = ({ onBoundsChange }) => {
                         center: [55.7558, 37.6176],
                         zoom: 10
                     });
-
-                    const handleBoundsChange = () => {
-                        const bounds = map.getBounds();
-                        const [leftTop, rightBottom] = bounds;
-                        onBoundsChange({ leftTop, rightBottom });
-                    };
-
-                    map.events.add('boundschange', handleBoundsChange);
-                    handleBoundsChange();
+                    var dots = []
+                    events.forEach(event => {
+                        dots.push(
+                            new window.ymaps.Placemark(
+                            [event.coords[0], event.coords[1]])
+                        )
+                    })
+                    dots.forEach(dot => {
+                        map.geoObjects.add(dot);
+                    })
+                    
                 });
+                
             })
             .catch((error) => console.error(error));
-    }, [onBoundsChange]);
-
+    }, []);
     return (
-        <div id="map" style={{ width: '100%', height: '235px' }}></div>
+        <div id="map" style={{position: 'absolute', top: '10vh', width: '78%', height: '480px'}}></div>
     );
 };
 
