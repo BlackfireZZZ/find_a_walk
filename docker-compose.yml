@@ -45,9 +45,10 @@ services:
   migrations:
     build:
       context: .
-      dockerfile: migrations/Dockerfile
+      dockerfile: migrations_module/Dockerfile
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       env_file: ".migrations_env"
 volumes:
