@@ -18,7 +18,7 @@ type EventService interface {
 	CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error)
 	DeleteEvent(ctx context.Context, id uuid.UUID, userID uuid.UUID) error
 	GetEvents(ctx context.Context, tags []string) ([]*domain.Event, error)
-	// GetEventsByUserID(ctx context.Context, userID uuid.UUID) ([]*domain.Event, error)
+	GetEventsByUserID(ctx context.Context, userID uuid.UUID) ([]*domain.Event, error)
 	GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64, tags []string) ([]*domain.Event, error)
 }
 
@@ -84,21 +84,21 @@ func (h *EventHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// func (h *EventHandler) GetMyEvents(w http.ResponseWriter, r *http.Request) {
-// 	userID, err := getUserIDFromContext(r)
-// 	if err != nil {
-// 		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusUnauthorized))
-// 		return
-// 	}
+func (h *EventHandler) GetMyEvents(w http.ResponseWriter, r *http.Request) {
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusUnauthorized))
+		return
+	}
 
-// 	// events, err := h.service.GetEventsByUserID(r.Context(), userID)
-// 	if err != nil {
-// 		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
-// 		return
-// 	}
+	events, err := h.service.GetEventsByUserID(r.Context(), userID)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
+		return
+	}
 
-// 	render.RenderList(w, r, newEventList(events))
-// }
+	render.RenderList(w, r, newEventList(events))
+}
 
 func newEventList(events []*domain.Event) []render.Renderer {
 	list := []render.Renderer{}

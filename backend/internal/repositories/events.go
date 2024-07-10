@@ -143,6 +143,46 @@ func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*doma
 	return events, nil
 }
 
+func (r *EventRepository) GetEventsByUserID(ctx context.Context, userID uuid.UUID) ([]*domain.Event, error) {
+	query := squirrel.
+		Select("distinct events.*", "count(members.event_id) as members_count").
+		From("events").
+		JoinClause("FULL JOIN members ON members.event_id = events.id").
+		GroupBy("events.id").
+		Where(squirrel.Eq{"author_id": userID}).
+	PlaceholderFormat(squirrel.Dollar)
+
+	stmt, args, error := query.ToSql()
+
+	if error != nil {
+		return nil, error
+	}
+
+	rows, err := r.db.Query(ctx, stmt, args...)
+	if err != nil {
+		return nil, error
+	}
+
+	var events []*domain.Event
+	for rows.Next() {
+		event := &domain.Event{}
+		err = rows.
+			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+				&event.StartLongitude, &event.EndLatitude,
+				&event.EndLongitude, &event.Date, &event.Capacity,
+				&event.MembersCount)
+		if err != nil {
+			return nil, err
+		}
+		event.Tags, err = r.GetTagsByEventID(ctx, event.ID)
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
+	return events, nil
+}
+
 func (r *EventRepository) GetEventByID(ctx context.Context, id uuid.UUID) (*domain.Event, error) {
 	event := &domain.Event{}
 

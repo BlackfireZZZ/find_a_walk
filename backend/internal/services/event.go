@@ -13,6 +13,7 @@ type EventRepository interface {
 	CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error)
 	DeleteEvent(ctx context.Context, id uuid.UUID) error
 	GetEvents(ctx context.Context, tags []string) ([]*domain.Event, error)
+	GetEventsByUserID(ctx context.Context, userID uuid.UUID) ([]*domain.Event, error)
 	GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64, tags []string) ([]*domain.Event, error)
 	DeleteExpiredEvents(ctx context.Context) error
 }
@@ -41,6 +42,10 @@ func (s *EventService) DeleteEvent(ctx context.Context, id uuid.UUID, userID uui
 
 func (s *EventService) GetEventByID(ctx context.Context, id uuid.UUID) (*domain.Event, error) {
 	return s.repo.GetEventByID(ctx, id)
+}
+
+func (s *EventService) GetEventsByUserID(ctx context.Context, userID uuid.UUID) ([]*domain.Event, error) {
+	return s.repo.GetEventsByUserID(ctx, userID)
 }
 
 func (s *EventService) CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error) {
