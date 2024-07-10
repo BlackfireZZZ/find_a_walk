@@ -23,7 +23,7 @@ func NewEventRepository(db *pgxpool.Pool) *EventRepository {
 }
 
 func (r *EventRepository) CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error) {
-	eventSchema := domain.NewEvent(event.AuthorID, event.StartLongitude,
+	eventSchema := domain.NewEvent(event.AuthorID, event.Name, event.StartLongitude,
 		event.StartLongitude, event.EndLatitude, event.EndLongitude,
 		event.Date, event.Capacity)
 
@@ -88,7 +88,7 @@ func TagsToString(tags []string) string {
 	stringTags := "("
 	for i, tag := range tags {
 		log.Println(i)
-		if len(tags) == i + 1 {
+		if len(tags) == i+1 {
 			stringTags += fmt.Sprintf("'%s'", tag)
 		} else {
 			stringTags += fmt.Sprintf("'%s',", tag)
@@ -124,7 +124,7 @@ func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*doma
 	for rows.Next() {
 		event := &domain.Event{}
 		err = rows.
-			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+			Scan(&event.ID, &event.Name, &event.AuthorID, &event.StartLatitude,
 				&event.StartLongitude, &event.EndLatitude,
 				&event.EndLongitude, &event.Date, &event.Capacity,
 				&event.MembersCount)
@@ -157,7 +157,7 @@ func (r *EventRepository) GetEventByID(ctx context.Context, id uuid.UUID) (*doma
 	}
 
 	err := r.db.QueryRow(ctx, stmt, args...).
-		Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+		Scan(&event.ID, &event.Name, &event.AuthorID, &event.StartLatitude,
 			&event.StartLongitude, &event.EndLatitude,
 			&event.EndLongitude, &event.Date, &event.Capacity,
 			&event.MembersCount)
@@ -204,7 +204,7 @@ func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1
 	for rows.Next() {
 		event := &domain.Event{}
 		err = rows.
-			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+			Scan(&event.ID, &event.Name, &event.AuthorID, &event.StartLatitude,
 				&event.StartLongitude, &event.EndLatitude,
 				&event.EndLongitude, &event.Date, &event.Capacity,
 				&event.MembersCount)

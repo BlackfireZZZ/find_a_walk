@@ -10,6 +10,7 @@ import (
 
 type Event struct {
 	ID             uuid.UUID `json:"id"`
+	Name           string    `json:"name"`
 	AuthorID       uuid.UUID `json:"author_id"`
 	StartLongitude float64   `json:"start_longitude"`
 	StartLatitude  float64   `json:"start_latitude"`
@@ -21,12 +22,13 @@ type Event struct {
 	Tags           []*Tag    `json:"tags"`
 }
 
-func NewEvent(authorID uuid.UUID, startLongitude float64,
+func NewEvent(authorID uuid.UUID, name string, startLongitude float64,
 	startLatitude float64, endLatitude float64,
 	endLongitude float64, date time.Time,
 	capacity int) Event {
 	return Event{
 		ID:             uuid.New(),
+		Name:           name,
 		AuthorID:       authorID,
 		StartLongitude: startLongitude,
 		StartLatitude:  startLatitude,
@@ -40,6 +42,7 @@ func NewEvent(authorID uuid.UUID, startLongitude float64,
 
 type EventIn struct {
 	AuthorID       uuid.UUID `json:"author_id"`
+	Name           string    `json:"name"`
 	StartLongitude float64   `json:"start_longitude"`
 	StartLatitude  float64   `json:"start_latitude"`
 	EndLongitude   float64   `json:"end_longitude"`
