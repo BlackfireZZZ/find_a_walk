@@ -76,7 +76,7 @@ const NewEventAdd = () => {
     xhr.open("POST", url, true);
     let data = JSON.stringify({
         'name': name,
-        'author': host,
+        'author_id': "17fd3c37-cdfd-4170-b7c0-2d6f640c0b8d",
         'agemin': agemin,
         'agemax': agemax,
         'maxcount': maxcount,
