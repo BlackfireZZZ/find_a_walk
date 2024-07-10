@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import {users, loggedUser} from './Profile.jsx'
+import {users} from './Profile.jsx'
 
 class Event {
     constructor(name, host, address, coords, agemin, agemax, date, maxcount) {
@@ -26,55 +26,66 @@ let events = [
         'Чилл без бухла', 
         users[0].nickname, 
         'Станция Новокосино', [55, 37],
-        16, 19, '27.07.2024', 5),
+        18, 27, '27.07.2024', 5),
     new Event(
         'ААА помогите с докером', 
         users[1].nickname, 
-        'НИУ ВШЭ, Покровский бульвар 11', [56, 38],
+        'НИУ ВШЭ, Покровский бульвар 11', [55.693328, 37.517114],
         16, 19, '11.07.2024', 0)
 ];
 
 const NewEventPanelShow = () => {
     let div = document.getElementById('CreateEvent');
     div.style.display = "block";
-    console.log(div.style.display);
 }
 const NewEventPanelHide = () => {
     let div = document.getElementById('CreateEvent');
     div.style.display = "none";
 }
 
-const EventComponent = ({ event }) => (
+const EventComponent = ( event ) => {
+    let address_text = '';
+    let request = `https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${event.coords[1]},${event.coords[0]}&format=json`;
+    fetch(request)
+        .then(res => res.json())
+        .then(out =>
+            console.log(out['response']['GeoObjectCollection']['featureMember']['0']['GeoObject']['metaDataProperty']['GeocoderMetaData']['text']))
+        .catch(err => console.log('Место не найдено. Попробуйте написать по-другому'));
+    console.log(event.coords, address_text);
+    return (
     <div className="Event" ref={useRef('CurrentEvents')} style={{padding: '0 20px 0 20px'}}>
         <div style={{display: 'inline-block'}}>
             <h2>{event.name}</h2>
             <p style={{ marginTop: '-10px' }}>{event.host}</p>
             <h5 style={{ marginTop: '-10px' }}>
-                {event.address}, {event.date}, {event.agemin} - {event.agemax} лет
+                {address_text}, {event.date}, {event.agemin} - {event.agemax} лет
             </h5>
         </div>
         <div style={{display: 'inline-block', position: 'absolute', right: '0', marginRight: '20px'}}>
             <input type="button" value="Я приду" class="ToGoButton" onClick={event.join()}></input>
-            {
-                console.log(event.maxcount > 0)
-            }
-            {
-                event.maxcount > 0 ? <h5>{event.count}/{event.maxcount}</h5> : <h5>---</h5>
-            }
-            
+            {event.maxcount > 0 ? <h5>{event.count}/{event.maxcount}</h5> : <h5>---</h5>}
         </div>
-    </div>
-);
+    </div>)
+};
 const NewEventAdd = () => {
-    let name = document.getElementById('name_input').value;
-    let host = loggedUser.nickname;
-    let address = 0;
-    let coords = [57, 62];
-    let agemin = document.getElementById('agemin_input').value;
-    let agemax = document.getElementById('agemax_input').value;
-    let maxcount = document.getElementById('maxcount_input').value;
-    let date = document.getElementById('date_input').value;
+    NewEventPanelHide();
+
+    //let name = document.getElementById('name_input').value;
+    //let host = loggedUser.nickname;
+    //let coords = [57, 62];
+    //let agemin = document.getElementById('agemin_input').value;
+    //let agemax = document.getElementById('agemax_input').value;
+    //let maxcount = document.getElementById('maxcount_input').value;
+    //let date = document.getElementById('date_input').value;
+    let address = document.getElementById('address_input').value;
+    let request = `https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${address}&format=json`;
+        fetch(request)
+        .then(res => res.json())
+        .then(out =>
+            console.log(address, out['response']['GeoObjectCollection']['featureMember']['0']['GeoObject']['Point']['pos']))
+        .catch(err => alert('Место не найдено. Попробуйте написать по-другому'));
 }
+
 const NewEvent = () => (
     <div id="CreateEvent" style={{ display: 'none' }}>
         <div>
@@ -86,7 +97,7 @@ const NewEvent = () => (
             <br />
             <input id="date_input" type="search" placeholder="Время сбора" />
             <br />
-            <p>Точка сбора</p>
+            <textarea id="address_input"placeholder="Точка сбора" />
         </div>
         <div style={{display: 'inline-block'}}>
             <p style={{display: "inline-block"}}>Мин. возраст</p>
