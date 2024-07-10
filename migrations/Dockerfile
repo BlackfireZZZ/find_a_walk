@@ -9,12 +9,12 @@ RUN go mod download
 
 COPY migrations/ .
 
+# Build the Go binary
 RUN CGO_ENABLED=0 GOOS=linux go build -o /migrations
 
+# Use a minimal base image
 FROM gcr.io/distroless/static-debian12
 
 COPY --from=builder /migrations /migrations
-
-COPY migrations/sql_migrations /sql_migrations
 
 ENTRYPOINT ["/migrations"]
