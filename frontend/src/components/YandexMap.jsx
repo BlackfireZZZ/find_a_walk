@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import {events} from './Event.jsx';
+import {events} from './EventGovno.jsx';
 
 const YandexMap = () => {
     useEffect(() => {

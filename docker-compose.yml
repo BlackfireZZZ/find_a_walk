@@ -27,7 +27,7 @@ services:
     volumes:
       - backend_data:/app_data
     environment:
-      env_file: ".back_env"
+      env_file: ".env"
     depends_on:
       - db
   nginx:
