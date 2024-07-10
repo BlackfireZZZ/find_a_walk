@@ -62,25 +62,32 @@ const EventComponent = ({ event }) => (
     </div>
 );
 const NewEventAdd = () => {
+    NewEventPanelHide();
+
     let name = document.getElementById('name_input').value;
     let host = loggedUser.nickname;
-    let address = 0;
+    
+    let address = document.getElementById('address_input').value;
+    fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${address}&format=json`)
+    .then(respond => respond.json())
+    .then(out => console.log(out['response']['GeoObjectCollection']['featureMember']['0']['GeoObject']['Point']))
     let coords = [57, 62];
+    
     let agemin = document.getElementById('agemin_input').value;
     let agemax = document.getElementById('agemax_input').value;
     let maxcount = document.getElementById('maxcount_input').value;
     let date = document.getElementById('date_input').value;
-    
+
     let xhr = new XMLHttpRequest();
     let url = 'http://localhost/api/events';
     xhr.open("POST", url, true);
     let data = JSON.stringify({
-        'name': name,
-        'author': host,
-        'agemin': agemin,
-        'agemax': agemax,
-        'maxcount': maxcount,
-
+        'author_id': '17fd3c37-cdfd-4170-b7c0-2d6f640c0b8d',
+        'start_longitude': coords[0],
+        'start_latitude': coords[1],
+        'date': '01.01.1970',
+        'capacity': maxcount,
+        'tags': [],
     });
     xhr.send(data);
 }
