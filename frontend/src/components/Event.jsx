@@ -17,7 +17,7 @@ class Event {
     }
 
     join() {
-        //alert('Тут что-то бэкендерам передать надо')
+        
     }
 }
 
@@ -26,7 +26,7 @@ let events = [
         'Чилл без бухла', 
         users[0].nickname, 
         'Станция Новокосино', [55, 37],
-        16, 19, '27.07.2024', 5),
+        19, 27, '27.07.2024', 5),
     new Event(
         'ААА помогите с докером', 
         users[1].nickname, 
@@ -55,12 +55,8 @@ const EventComponent = ({ event }) => (
         </div>
         <div style={{display: 'inline-block', position: 'absolute', right: '0', marginRight: '20px'}}>
             <input type="button" value="Я приду" class="ToGoButton" onClick={event.join()}></input>
-            {
-                console.log(event.maxcount > 0)
-            }
-            {
-                event.maxcount > 0 ? <h5>{event.count}/{event.maxcount}</h5> : <h5>---</h5>
-            }
+            {console.log(event.maxcount > 0)}
+            {event.maxcount > 0 ? <h5>{event.count}/{event.maxcount}</h5> : <h5>---</h5>}
             
         </div>
     </div>
@@ -74,6 +70,19 @@ const NewEventAdd = () => {
     let agemax = document.getElementById('agemax_input').value;
     let maxcount = document.getElementById('maxcount_input').value;
     let date = document.getElementById('date_input').value;
+    
+    let xhr = new XMLHttpRequest();
+    let url = 'http://localhost/api/events';
+    xhr.open("POST", url, true);
+    let data = JSON.stringify({
+        'name': name,
+        'author': host,
+        'agemin': agemin,
+        'agemax': agemax,
+        'maxcount': maxcount,
+
+    });
+    xhr.send(data);
 }
 const NewEvent = () => (
     <div id="CreateEvent" style={{ display: 'none' }}>
