@@ -1,11 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {users, loggedUser} from './Profile.jsx'
 
 class Event {
-    constructor(name, host, address, coords, agemin, agemax, date, maxcount) {
+    constructor(name, host, address, cords, agemin, agemax, date, maxcount) {
         this.name = name;
         this.host = host;
-        this.coords = coords;
+        this.cords = cords;
         this.radius = 1000;
         this.address = address;
         this.agemin = agemin;
@@ -33,6 +33,16 @@ let events = [
         'НИУ ВШЭ, Покровский бульвар 11', [56, 38],
         16, 19, '11.07.2024', 0)
 ];
+
+const getEvents = async () => {
+    try {
+        let response = await fetch('http://localhost/api/events');
+        let data = await response.json();
+    } 
+    catch (error) {
+        console.error('Error fetching events:', error);
+    }
+}
 
 const NewEventPanelShow = () => {
     let div = document.getElementById('CreateEvent');
@@ -62,27 +72,34 @@ const EventComponent = ({ event }) => (
     </div>
 );
 const NewEventAdd = () => {
+    NewEventPanelHide();
+
     let name = document.getElementById('name_input').value;
     let host = loggedUser.nickname;
-    let address = 0;
-    let coords = [57, 62];
+
+    const [cords, setCords] = useState([56, 62]);
+    let address = document.getElementById('address_input').value;
+    fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${address}&format=json`)
+    .then(respond => respond.json())
+    .then(out => setCords(out['response']['GeoObjectCollection']['featureMember']['0']['GeoObject']['Point']))
     let agemin = document.getElementById('agemin_input').value;
     let agemax = document.getElementById('agemax_input').value;
     let maxcount = document.getElementById('maxcount_input').value;
     let date = document.getElementById('date_input').value;
-    
+
     let xhr = new XMLHttpRequest();
     let url = 'http://localhost/api/events';
     xhr.open("POST", url, true);
     let data = JSON.stringify({
-        'name': name,
-        'author_id': "17fd3c37-cdfd-4170-b7c0-2d6f640c0b8d",
-        'agemin': agemin,
-        'agemax': agemax,
-        'maxcount': maxcount,
-
+        'author_id': '17fd3c37-cdfd-4170-b7c0-2d6f640c0b8d',
+        'start_longitude': cords[0],
+        'start_latitude': cords[1],
+        'date': '01.01.1970',
+        'capacity': maxcount,
+        'tags': [],
     });
     xhr.send(data);
+    console.log(cords);
 }
 const NewEvent = () => (
     <div id="CreateEvent" style={{ display: 'none' }}>
@@ -95,7 +112,7 @@ const NewEvent = () => (
             <br />
             <input id="date_input" type="search" placeholder="Время сбора" />
             <br />
-            <p>Точка сбора</p>
+            <input id="address_input" type="search" placeholder="Точка сбора" />
         </div>
         <div style={{display: 'inline-block'}}>
             <p style={{display: "inline-block"}}>Мин. возраст</p>
