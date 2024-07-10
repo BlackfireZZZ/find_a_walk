@@ -1,8 +1,8 @@
 import React from 'react';
 import './App.css';
-import User from './components/User';
-import {Profile, users, loggedUser} from './components/Profile.jsx';
-import { Event, EventComponent, NewEvent, NewEventPanelShow, events } from './components/Event.jsx';
+//import User from './components/User';
+import {Profile, loggedUser} from './components/Profile.jsx';
+import { EventComponent, NewEvent, NewEventPanelShow, events } from './components/Event.jsx';
 import YandexMap from './components/YandexMap.jsx';
 
 function App() {
@@ -17,9 +17,11 @@ function App() {
                 <Profile user={loggedUser} />
                 <div style={{display: 'inline-block', width: '78%'}}>
                     <YandexMap />
-                    <div id="CurrentEvents" style={{}}>
+                    <div id="CurrentEvents">
                     {events.map((event, index) => (
-                        <EventComponent key={index} event={event} />
+                        (event.agemin <= loggedUser.getAge() && loggedUser.getAge() <= event.agemax) && 
+                        (event.count < event.maxcount || event.maxcount === 0) ?
+                        EventComponent(event) : ''
                     ))}
                     </div>
                     <NewEvent />

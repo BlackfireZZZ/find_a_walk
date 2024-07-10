@@ -46,6 +46,8 @@ services:
     build:
       context: .
       dockerfile: migrations/Dockerfile
+    volumes:
+      - migrations_data:/app_data
     depends_on:
       - db
     environment:
@@ -53,4 +55,6 @@ services:
 volumes:
   db-data:
   backend_data:
+    driver: local
+  migrations_data:
     driver: local

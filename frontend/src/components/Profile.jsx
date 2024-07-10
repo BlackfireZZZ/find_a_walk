@@ -13,7 +13,7 @@ class User {
 }
 let users = [
     new User('Chinese developers Team',
-        [1, 7, 2006],
+        [1, 7, 2007],
         ['89456783542', 'nightmarefuel'],
         [55.7558, 37.6176],
     ),
@@ -34,6 +34,7 @@ const ContactAdd = () => {
     let newcontact = document.createElement('div');
     newcontact.className = "ContactElement";
     newcontact.innerHTML = `<h5 style="color: white">${document.getElementById('contact_input').value}</h5>`;
+    //Отправить данные бэкендерам
     div.prepend(newcontact);
 }
 const Profile = ({ user }) => (
