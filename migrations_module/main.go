@@ -1,7 +1,7 @@
 package main
 
 import (
-	"database/sql"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 	"log"
 	// Init DB drivers.
@@ -10,7 +10,7 @@ import (
 
 func main() {
 	connectionString := "host=db port=5432 user=postgres password=PROD dbname=PROD sslmode=disable"
-	db, err := sql.Open("postgres", connectionString)
+	db, err := goose.OpenDBWithDriver("pgx", connectionString)
 	if err != nil {
 		log.Fatal(err)
 	}

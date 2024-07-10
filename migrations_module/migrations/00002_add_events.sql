@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS events (
     author_id UUID NOT NUll,
     start_longitude FLOAT NOT NULL,
     start_latitude FLOAT NOT NULL,
-    end_longitude FLOAT NOT NULL,
-    end_latitude FLOAT NOT NULL,
+    end_longitude FLOAT,
+    end_latitude FLOAT,
     date DATE NOT NULL,
     capacity INT NOT NULL,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
