@@ -59,7 +59,6 @@ func main() {
 		middleware.RequestID,
 		middleware.Recoverer,
 	)
-	r.Mount("/api/v1", r)
 
 	jwtAuthMiddlewares := []func(http.Handler) http.Handler{
 		jwtauth.Verifier(tokenAuth),

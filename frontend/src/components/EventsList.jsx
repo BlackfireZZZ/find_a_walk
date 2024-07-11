@@ -1,11 +1,7 @@
 import {EventObj, Event} from "./Event";
-
+import config from '../config';
 const EventsList = () => {
 
-    const TESTEVENTS = [
-        new EventObj('name1', '1wefwfr', 'author_mudak', 56, 45, 33, 44, '2024-07-27T00:00:00Z', 5, 1, []),
-        new EventObj('name1', '2wefwfr', 'author_mudak', 56, 45, 33, 44, '2024-07-27T00:00:00Z', 5, 0, [])
-    ]
 
     function NewEventFromJson(json) {
         return new EventObj(
@@ -26,7 +22,7 @@ const EventsList = () => {
     const getEvents = () => {
         try {
             let xhr = new XMLHttpRequest();
-            let url = 'http://localhost/api/events';
+            let url = config.Host_url + 'events';
             xhr.open("GET", url, true);
             xhr.send();
             return JSON.parse(xhr.responseText).map((event) => NewEventFromJson(event));
@@ -35,12 +31,17 @@ const EventsList = () => {
             return [];
         }
     }
-    const events = TESTEVENTS;
+    let events = getEvents();
     return (
         <div id="CurrentEvents" style={{}}>
-            {events.map((event, index) => (
-                <Event event={event}/>
-            ))}
+            {events.length > 0 ? 
+                events.map((event, index) => (
+                    <Event event={event}/>
+                )) :
+                <h2 style={{textAlign: 'center'}}>
+                    Здесь ничего нет, будь первым
+                </h2>
+            }
         </div>
     );
 };

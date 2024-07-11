@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import DateTimePicker from 'react-datetime-picker';
 import { users, loggedUser } from './Profile.jsx';
 import { EventObj } from './Event.jsx';
+import Host_url from '../config'
+import config from "../config";
 
 const NewEventAdd = async (nameRef, date, addressRef, ageMinRef, ageMaxRef, maxCountRef, setCords) => {
     const name = nameRef.current.value;
@@ -33,7 +35,7 @@ const NewEventAdd = async (nameRef, date, addressRef, ageMinRef, ageMaxRef, maxC
     );
 
     const xhr = new XMLHttpRequest();
-    const url = 'http://localhost/api/events';
+    const url = config.Host_url + 'events';
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhr.send(JSON.stringify(event));
@@ -52,62 +54,67 @@ const NewEvent = () => {
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
     const handleAddressChange = async (e) => {
-        const address = e.target.value;
-        const response = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${address}&format=json`);
-        const data = await response.json();
-        const suggestions = data.response.GeoObjectCollection.featureMember.map(member => member.GeoObject.name);
-        setSuggestions(suggestions);
+        if (document.getElementById('address_input').value.length > 0) {
+            const address = e.target.value;
+            const response = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${address}&format=json`);
+            const data = await response.json();
+            const suggestions = data.response.GeoObjectCollection.featureMember.map(member => member.GeoObject.name);
+            setSuggestions(suggestions);
+        }
     };
 
+    const handleDateChange = () => {
+        const date = document.getElementById('date_input').value;
+        const time = document.getElementById('time_input').value;
+        setDate(date+time);
+        setIsDatePickerOpen(false); // Close the date picker after selecting a date
+    };
     const handleSuggestionClick = (suggestion) => {
         addressRef.current.value = suggestion;
         setSuggestions([]);
     };
 
-    const handleDateChange = (date) => {
-        setDate(date);
-        setIsDatePickerOpen(false); // Close the date picker after selecting a date
-    };
-
     return (
-        <div id="CreateEvent" style={{ padding: '20px', border: '1px solid #000' }}>
+        <div id="CreateEvent">
             <div>
                 <h1 style={{ display: 'inline-block' }}>Создание нового события</h1>
+                <h1 style={{display: 'inline-block'}} className='NegativeButton' onClick={() => window.location.href = '/'}>X</h1>
             </div>
             <div style={{ display: 'inline-block', verticalAlign: 'top' }}>
-                <input id="name_input" type="search" placeholder="Название" ref={nameRef} />
+                <input id="name_input" type="text" placeholder="Название" ref={nameRef} />
                 <br />
                 <div>
-                    <DateTimePicker
+                    <input id="date_input" style={{width: "50%"}} type="date" onClick={handleDateChange}></input>
+                    <input id="time_input" style={{width: "33%"}} type="time"></input>
+                    {/*<DateTimePicker
+                        className = 'DateTimePicker'
                         onChange={handleDateChange}
                         value={date}
                         isOpen={isDatePickerOpen}
                         onCalendarClose={() => setIsDatePickerOpen(false)}
                         onCalendarOpen={() => setIsDatePickerOpen(true)}
-                    />
+                    />*/}
                 </div>
-                <br />
                 <input id="address_input" type="search" placeholder="Точка сбора" ref={addressRef} onChange={handleAddressChange} />
                 {suggestions.length > 0 && (
-                    <ul className="suggestions">
+                    <div className="suggestions">
                         {suggestions.map((suggestion, index) => (
-                            <li key={index} onClick={() => handleSuggestionClick(suggestion)}>{suggestion}</li>
+                            <div className='GeoSuggest' key={index} onClick={() => handleSuggestionClick(suggestion)}>{suggestion}</div>
                         ))}
-                    </ul>
+                    </div>
                 )}
             </div>
             <div style={{ display: 'inline-block' }}>
-                <p style={{ display: "inline-block" }}>Мин. возраст</p>
-                <input id="agemin_input" type="text" placeholder="Мин. возраст" ref={ageMinRef} />
+                <input id="agemin_input" type="number" placeholder="Мин. возраст" ref={ageMinRef} />
                 <br />
-                <p style={{ display: "inline-block" }}>Макс. возраст</p>
-                <input id="agemax_input" type="text" placeholder="Макс. возраст" ref={ageMaxRef} />
+                <input id="agemax_input" type="number" placeholder="Макс. возраст" ref={ageMaxRef} />
                 <br />
-                <p style={{ display: "inline-block" }}>Макс. кол-во человек</p>
-                <input id="maxcount_input" type="text" placeholder="Макс. кол-во участников" ref={maxCountRef} />
-                <br />
-                <input type="submit" value='Опубликовать' className='ToGoButton' onClick={() => NewEventAdd(nameRef, date, addressRef, ageMinRef, ageMaxRef, maxCountRef, setCords)} />
+                <input id="maxcount_input" type="number" placeholder="Макс. кол-во участников" ref={maxCountRef} />
             </div>
+            <br />
+            <input type="submit" value='Опубликовать' 
+            style={{width: '100%'}} className='ToGoButton' 
+            onClick={() => NewEventAdd(nameRef, date, addressRef, ageMinRef, ageMaxRef, maxCountRef, setCords)} />
         </div>
     );
 };

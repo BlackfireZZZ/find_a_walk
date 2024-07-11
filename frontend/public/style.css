@@ -3,6 +3,10 @@ header{
     border: black 1px solid;
     font-family: Arial;
 }
+#map{
+    width: 203vh;
+    height: 350px;
+}
 #Profile{
     height: 91vh;
     width: 20%;
@@ -18,22 +22,25 @@ header{
     padding: 10px;
 }
 #CurrentEvents{
-    width: 77%;
-    height: 40vh;
-    position: absolute;
-    bottom: 0;
+    width: 95%;
+    height: 37vh;
     background-color:rgb(223, 223, 223);
     margin: 0;
     padding: 10px;
+    margin-top: 10px;
 }
 #CreateEvent {
-    width: 77%;
-    height: 40vh;
+    width: auto;
+    height: 400px;
     position: absolute;
+    top: 20%;
+    left: 30%;
     bottom: 0;
     background-color:rgb(223, 223, 223);
     margin: 0;
-    padding: 10px;
+    padding: 20px; 
+    border: '1px solid #000';
+    border-radius: 20px
 }
 .Event{
     background-color: white;
@@ -61,6 +68,7 @@ header{
     border-radius: 10px;
 }
 .NegativeButton:hover {
+    cursor: pointer;
     background-color: rgb(255, 94, 0);
 }
 .ContactElement{
@@ -70,4 +78,14 @@ header{
     margin: 5px;
     margin-top: 10px; 
     width: 80%
+}
+.GeoSuggest {
+    font-family: 'Comfortaa';
+    background-color: white;
+    font-family: Arial;
+    font-size: 12px;
+}
+.GeoSuggest:hover {
+    cursor: pointer;
+    background-color: grey;
 }
