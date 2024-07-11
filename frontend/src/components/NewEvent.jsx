@@ -112,7 +112,9 @@ const NewEvent = () => {
                 <input id="maxcount_input" type="number" placeholder="Макс. кол-во участников" ref={maxCountRef} />
             </div>
             <br />
-            <input type="submit" value='Опубликовать' style={{width: '100%'}} className='ToGoButton' onClick={() => NewEventAdd(nameRef, date, addressRef, ageMinRef, ageMaxRef, maxCountRef, setCords)} />
+            <input type="submit" value='Опубликовать' 
+            style={{width: '100%'}} className='ToGoButton' 
+            onClick={() => NewEventAdd(nameRef, date, addressRef, ageMinRef, ageMaxRef, maxCountRef, setCords)} />
         </div>
     );
 };
