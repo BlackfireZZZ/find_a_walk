@@ -22,10 +22,10 @@ type EventService interface {
 	GetEventsByUserID(ctx context.Context, userID uuid.UUID) ([]*domain.Event, error)
 	GetEventsByAnglesCoordinates(ctx context.Context, lon1, lat1, lon2, lat2 float64, tags []string) ([]*domain.Event, error)
 
-	// CreateEventMember(ctx context.Context, eventID uuid.UUID, userID uuid.UUID) error
-	// DeleteEventMember(ctx context.Context, eventID uuid.UUID, userID uuid.UUID) error
+	CreateEventMember(ctx context.Context, eventID uuid.UUID, userID uuid.UUID) error
+	DeleteEventMember(ctx context.Context, eventID uuid.UUID, userID uuid.UUID) error
 	// GetEventMembers(ctx context.Context, eventID uuid.UUID) ([]*domain.User, error)
-	// GetMyEventMembers(ctx context.Context, userID uuid.UUID) ([]*domain.Event, error)
+	GetMyEventMembers(ctx context.Context, userID uuid.UUID) ([]*domain.Event, error)
 }
 
 type EventHandler struct {
@@ -174,15 +174,73 @@ func (h *EventHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *EventHandler) CreateEventMember(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	var eventID uuid.UUID
+	var err error
+	if eventID, err = uuid.Parse(id); err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
+		return
+	}
+
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusUnauthorized))
+		return
+	}
+
+	err = h.service.CreateEventMember(r.Context(), eventID, userID)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
+		return
+	}
+
+	render.Render(w, r, domain.OKRequest("ok", http.StatusCreated))
 }
 
 func (h *EventHandler) DeleteEventMember(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	var eventID uuid.UUID
+	var err error
+	if eventID, err = uuid.Parse(id); err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
+		return
+	}
+
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusUnauthorized))
+		return
+	}
+
+	err = h.service.DeleteEventMember(r.Context(), eventID, userID)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
+		return
+	}
+
+	render.Render(w, r, domain.OKRequest("ok", http.StatusNoContent))
 }
 
-func (h *EventHandler) GetEventMembers(w http.ResponseWriter, r *http.Request) {
-}
+// func (h *EventHandler) GetEventMembers(w http.ResponseWriter, r *http.Request) {
+// }
 
 func (h *EventHandler) GetMyEventMembers(w http.ResponseWriter, r *http.Request) {
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusUnauthorized))
+		return
+	}
+
+	var events []*domain.Event
+	events, err = h.service.GetMyEventMembers(r.Context(), userID)
+	if err != nil {
+		render.Render(w, r, domain.ErrInvalidRequest(err, http.StatusBadRequest))
+		return
+	}
+
+	render.RenderList(w, r, newEventList(events))
 }
 
 func StrToFloat64(list []string) ([]float64, error) {
