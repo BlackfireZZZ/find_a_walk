@@ -17,9 +17,10 @@ type User struct {
 }
 
 type UserIn struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Name      string   `json:"name"`
+	Email     string   `json:"email"`
+	Password  string   `json:"password"`
+	Interests []string `json:"interests"`
 }
 
 type UserAuth struct {

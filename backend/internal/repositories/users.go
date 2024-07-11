@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 
 	"find_a_walk/internal/domain"
@@ -45,7 +46,7 @@ func (r *UserRepository) GetTagsByUserID(ctx context.Context, userID uuid.UUID) 
 	return tags, nil
 }
 
-func (r *UserRepository) DeleteInterests(ctx context.Context, id uuid.UUID, interests []string) (error) {
+func (r *UserRepository) DeleteInterests(ctx context.Context, id uuid.UUID, interests []string) error {
 	query_tags := squirrel.Delete("user_tags").
 		Where(squirrel.And{
 			squirrel.Eq{"user_id": id},
@@ -161,22 +162,55 @@ func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*dom
 
 func (r *UserRepository) CreateUser(ctx context.Context, user *domain.UserIn) (*domain.User, error) {
 	userSchema := domain.NewUser(user.Name, user.Password, user.Email)
-	query := squirrel.Insert("users").
+	user_query := squirrel.Insert("users").
 		Columns("id", "name", "email", "password").
 		Values(userSchema.ID, userSchema.Name, userSchema.Email, userSchema.Password).
 		PlaceholderFormat(squirrel.Dollar)
 
-	stmt, args, err := query.ToSql()
+	query_interests := squirrel.Insert("user_tags").
+		Columns("user_id", "tag_id").
+		PlaceholderFormat(squirrel.Dollar)
+
+	for _, tag := range user.Interests {
+		query_interests = query_interests.Values(userSchema.ID, tag)
+	}
+
+	interests_stmt, intersts_args, err := query_interests.ToSql()
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = r.db.Exec(ctx, stmt, args...)
-
+	user_stmt, user_args, err := user_query.ToSql()
 	if err != nil {
 		return nil, err
 	}
+
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+
+	_, err = tx.Exec(ctx, user_stmt, user_args...)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = tx.Exec(ctx, interests_stmt, intersts_args...)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
 	log.Println("Created user: ", &userSchema.ID)
 
-	return &userSchema, nil
+	dbUser, err := r.GetUserByID(ctx, userSchema.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return dbUser, nil
 }
