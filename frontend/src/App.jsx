@@ -7,12 +7,11 @@ import {NewEvent} from "./components/NewEvent";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 
-
 function App() {
     return (
         <Router>
             <Routes>
-                <Route path="/main" element={<MainScreen/>}/>
+                <Route path="/" element={<MainScreen/>}/>
                 <Route path="/register" element={<RegScreen/>}/>
                 <Route path="/login" element={<LoginScreen/>}/>
                 <Route path="/newEvent" element={<NewEvent/>}/>

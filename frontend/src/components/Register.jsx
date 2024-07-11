@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../RegScreen.css';
+import Host_url from './Host'
 
 const RegScreen = () => {
     const [nickname, setNickname] = useState('');
@@ -40,7 +41,7 @@ const RegScreen = () => {
         };
 
         try {
-            const response = await fetch('http://localhost/api/users', {
+            const response = await fetch(Host_url + 'users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
