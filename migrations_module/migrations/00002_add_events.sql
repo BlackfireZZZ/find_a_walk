@@ -1,6 +1,7 @@
 -- +goose Up
 CREATE TABLE IF NOT EXISTS events (
     id UUID PRIMARY KEY,
+    name VARCHAR,
     author_id UUID NOT NUll,
     start_longitude FLOAT NOT NULL,
     start_latitude FLOAT NOT NULL,
