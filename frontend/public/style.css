@@ -27,7 +27,6 @@ header{
     padding: 10px;
 }
 #CreateEvent {
-    display: none;
     width: 77%;
     height: 40vh;
     position: absolute;
