@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import config from '../config';
+import { redirect } from "react-router-dom";
+
 
 const LoginCheck = async (email, password, setError) => {
         try {
@@ -16,7 +18,7 @@ const LoginCheck = async (email, password, setError) => {
                 // Успешный вход
                 document.cookie = `Authorization=${response.data.token}; path=/;`;
                 // Перенаправление на главную страницу или другую страницу
-                window.location.href = '/';
+                return redirect('/')
         } catch (error) {
                 if (error.response && (error.response.status === 400 || error.response.status === 401)) {
                         setError('Неверные данные входа');
