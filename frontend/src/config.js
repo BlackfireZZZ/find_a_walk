@@ -1,5 +1,5 @@
 const config = {
-    Host_url: "https://your-host-url.com"
+    Host_url: "http://localhost/api/v1/"
 };
 
 export default config;
