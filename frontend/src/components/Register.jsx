@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../RegScreen.css';
-import Host_url from './Host'
+import Host_url from '../config'
+import config from "../config";
 
 const RegScreen = () => {
     const [nickname, setNickname] = useState('');
@@ -41,7 +42,7 @@ const RegScreen = () => {
         };
 
         try {
-            const response = await fetch(Host_url + 'users', {
+            const response = await fetch(config.Host_url + 'users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
