@@ -12,11 +12,11 @@ function App() {
         <div className="App">
             <Header/>
             <main>
-                {/*<Profile user={loggedUser}/>*/}
-                {/*<div style={{display: 'inline-block', width: '78%'}}>*/}
-                {/*    <YandexMap/>*/}
-                {/*    <EventsList/>*/}
-                {/*</div>*/}
+                <Profile user={loggedUser}/>
+                <div style={{display: 'inline-block', width: '78%'}}>
+                    <YandexMap/>
+                    <EventsList/>
+                </div>
                 <NewEvent/>
             </main>
         </div>
