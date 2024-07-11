@@ -13,11 +13,10 @@ export class EventObj {
         this.capacity = capacity;
         this.members_count = members_count;
         this.tags = tags;
-
     }
 
     join() {
-
+        // Implementation of join method
     }
 }
 
@@ -32,13 +31,14 @@ export const Event = ({event}) => {
                 </h5>
             </div>
             <div style={{display: 'inline-block', position: 'absolute', right: '0', marginRight: '20px'}}>
-                <input type="button" value="Я приду" className="ToGoButton" onClick={event.join()}></input>
+                <input type="button" value="Я приду" className="ToGoButton" onClick={event.join}></input>
                 {console.log(event.capacity > 0)}
                 {event.capacity > 0 ? <h5>{event.members_count}/{event.capacity}</h5> : <h5>---</h5>}
-
             </div>
         </div>
     )
 }
 
-export default {Event, EventObj};
+const components = { Event, EventObj };
+
+export default components;

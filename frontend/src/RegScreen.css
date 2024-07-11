@@ -1,0 +1,47 @@
+.reg-screen {
+    position: absolute;
+    left: 40%;
+    top: 30%;
+    width: 20%;
+    border: 1px black solid;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.input-field {
+    border: 1px black solid;
+    width: 95%;
+}
+
+.interests-section {
+    margin-top: 10px;
+}
+
+.interests-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.interest-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 5px;
+}
+
+.remove-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: red;
+    font-size: 14px;
+}
+
+.register-button {
+    width: 97%;
+    border-radius: 10px;
+    cursor: pointer;
+}
