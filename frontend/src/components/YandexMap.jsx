@@ -38,7 +38,7 @@
              .catch((error) => console.error(error));
      }, []);
      return (
-         <div id="map" style={{position: 'absolute', top: '10vh', width: '78%', height: '480px'}}></div>
+         <div id="map"></div>
      );
  };
 
