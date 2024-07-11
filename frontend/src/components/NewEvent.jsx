@@ -96,7 +96,7 @@ const NewEvent = () => {
                     </ul>
                 )}
             </div>
-            <div style={{ display: 'inline-block' }}>
+            <div style={{ display: 'block' }}>
                 <p style={{ display: "inline-block" }}>Мин. возраст</p>
                 <input id="agemin_input" type="text" placeholder="Мин. возраст" ref={ageMinRef} />
                 <br />
