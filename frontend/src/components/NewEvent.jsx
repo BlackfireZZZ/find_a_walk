@@ -70,40 +70,41 @@ const NewEvent = () => {
     };
 
     return (
-        <div id="CreateEvent" style={{ padding: '20px', border: '1px solid #000' }}>
+        <div id="CreateEvent">
             <div>
                 <h1 style={{ display: 'inline-block' }}>Создание нового события</h1>
+                <h1 style={{display: 'inline-block'}} className='NegativeButton'>X</h1>
             </div>
             <div style={{ display: 'inline-block', verticalAlign: 'top' }}>
                 <input id="name_input" type="search" placeholder="Название" ref={nameRef} />
                 <br />
                 <div>
-                    <DateTimePicker
+                    <input type="date"></input>
+                    <input type="time"></input>
+                    {/*<DateTimePicker
+                        className = 'DateTimePicker'
                         onChange={handleDateChange}
                         value={date}
                         isOpen={isDatePickerOpen}
                         onCalendarClose={() => setIsDatePickerOpen(false)}
                         onCalendarOpen={() => setIsDatePickerOpen(true)}
-                    />
+                    />*/}
                 </div>
                 <br />
                 <input id="address_input" type="search" placeholder="Точка сбора" ref={addressRef} onChange={handleAddressChange} />
                 {suggestions.length > 0 && (
-                    <ul className="suggestions">
+                    <div className="suggestions">
                         {suggestions.map((suggestion, index) => (
-                            <li key={index} onClick={() => handleSuggestionClick(suggestion)}>{suggestion}</li>
+                            <div className='GeoSuggest' key={index} onClick={() => handleSuggestionClick(suggestion)}>{suggestion}</div>
                         ))}
-                    </ul>
+                    </div>
                 )}
             </div>
-            <div style={{ display: 'block' }}>
-                <p style={{ display: "inline-block" }}>Мин. возраст</p>
+            <div style={{ display: 'inline-block' }}>
                 <input id="agemin_input" type="text" placeholder="Мин. возраст" ref={ageMinRef} />
                 <br />
-                <p style={{ display: "inline-block" }}>Макс. возраст</p>
                 <input id="agemax_input" type="text" placeholder="Макс. возраст" ref={ageMaxRef} />
                 <br />
-                <p style={{ display: "inline-block" }}>Макс. кол-во человек</p>
                 <input id="maxcount_input" type="text" placeholder="Макс. кол-во участников" ref={maxCountRef} />
                 <br />
                 <input type="submit" value='Опубликовать' className='ToGoButton' onClick={() => NewEventAdd(nameRef, date, addressRef, ageMinRef, ageMaxRef, maxCountRef, setCords)} />

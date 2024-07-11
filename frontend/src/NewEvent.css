@@ -20,12 +20,6 @@
     padding: 8px;
     cursor: pointer;
 }
-
 #CreateEvent li:hover {
     background-color: #f0f0f0;
-}
-
-.DateTimePicker {
-    width: 100%;
-    background-color: blue;
 }
