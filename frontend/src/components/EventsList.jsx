@@ -34,9 +34,14 @@ const EventsList = () => {
     let events = getEvents();
     return (
         <div id="CurrentEvents" style={{}}>
-            {events.map((event, index) => (
-                <Event event={event}/>
-            ))}
+            {events.length > 0 ? 
+                events.map((event, index) => (
+                    <Event event={event}/>
+                )) :
+                <h2 style={{textAlign: 'center'}}>
+                    Здесь ничего нет, будь первым
+                </h2>
+            }
         </div>
     );
 };
