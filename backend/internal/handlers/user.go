@@ -142,3 +142,12 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	render.Status(r, http.StatusCreated)
 	render.Render(w, r, user)
 }
+
+
+func newUserList(users []*domain.User) []render.Renderer {
+	list := []render.Renderer{}
+	for _, user := range users {
+		list = append(list, user)
+	}
+	return list
+}

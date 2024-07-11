@@ -84,7 +84,7 @@ func main() {
 		r.With(jwtAuthMiddlewares...).Get("/me", mainHandlers.EventHandler.GetMyEvents)
 		r.With(jwtAuthMiddlewares...).Post("/{id}/member", mainHandlers.EventHandler.CreateEventMember)
 		r.With(jwtAuthMiddlewares...).Delete("/{id}/member", mainHandlers.EventHandler.DeleteEventMember)
-		// r.With(jwtAuthMiddlewares...).Get("/{id}/members", mainHandlers.EventHandler.GetEventMembers)
+		r.With(jwtAuthMiddlewares...).Get("/{id}/members", mainHandlers.EventHandler.GetEventMembers)
 		r.With(jwtAuthMiddlewares...).Get("/members/me", mainHandlers.EventHandler.GetMyEventMembers)
 
 		r.Get("/", mainHandlers.EventHandler.GetEvents)

@@ -19,6 +19,7 @@ type EventRepository interface {
 	CreateEventMember(ctx context.Context, eventID, userID uuid.UUID) error
 	DeleteEventMember(ctx context.Context, eventID, userID uuid.UUID) error
 	GetEventsByEventMember(ctx context.Context, userID uuid.UUID) ([]*domain.Event, error)
+	GetEventMembers(ctx context.Context, eventID uuid.UUID) ([]*domain.User, error)
 }
 
 // Реализация сервиса
@@ -83,9 +84,18 @@ func (s *EventService) DeleteEventMember(ctx context.Context, eventID uuid.UUID,
 	return s.repo.DeleteEventMember(ctx, eventID, userID)
 }
 
-// func (s *EventService) GetEventMembers(ctx context.Context, eventID uuid.UUID) ([]*domain.User, error) {
-// 	return []*domain.User{}, nil
-// }
+func (s *EventService) GetEventMembers(ctx context.Context, eventID uuid.UUID, userID uuid.UUID) ([]*domain.User, error) {
+	event, err := s.repo.GetEventByID(ctx, eventID)
+	if err != nil {
+		return nil, err
+	}
+
+	if event.AuthorID != userID{
+		return nil, errors.New("only owner of the event can get members list")
+	}
+
+	return s.repo.GetEventMembers(ctx, eventID)
+}
 
 func (s *EventService) GetMyEventMembers(ctx context.Context, userID uuid.UUID) ([]*domain.Event, error) {
 	return s.repo.GetEventsByEventMember(ctx, userID)
