@@ -13,6 +13,7 @@ input {
     margin: 5px;
 }
 input[type=button]:hover {
+    cursor: pointer;
     background-color: gray;
     color: white;
 }

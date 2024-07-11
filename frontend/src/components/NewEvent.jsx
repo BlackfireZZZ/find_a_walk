@@ -54,17 +54,19 @@ const NewEvent = () => {
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
     const handleAddressChange = async (e) => {
-        const address = e.target.value;
-        const response = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${address}&format=json`);
-        const data = await response.json();
-        const suggestions = data.response.GeoObjectCollection.featureMember.map(member => member.GeoObject.name);
-        setSuggestions(suggestions);
+        if (document.getElementById('address_input').value.length > 0) {
+            const address = e.target.value;
+            const response = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${address}&format=json`);
+            const data = await response.json();
+            const suggestions = data.response.GeoObjectCollection.featureMember.map(member => member.GeoObject.name);
+            setSuggestions(suggestions);
+        }
     };
 
     const handleDateChange = () => {
         const date = document.getElementById('date_input').value;
         const time = document.getElementById('time_input').value;
-        setDate();
+        setDate(date+time);
         setIsDatePickerOpen(false); // Close the date picker after selecting a date
     };
     const handleSuggestionClick = (suggestion) => {
@@ -76,14 +78,14 @@ const NewEvent = () => {
         <div id="CreateEvent">
             <div>
                 <h1 style={{ display: 'inline-block' }}>Создание нового события</h1>
-                <h1 style={{display: 'inline-block'}} className='NegativeButton'>X</h1>
+                <h1 style={{display: 'inline-block'}} className='NegativeButton' onClick={() => window.location.href = '/'}>X</h1>
             </div>
             <div style={{ display: 'inline-block', verticalAlign: 'top' }}>
-                <input id="name_input" type="search" placeholder="Название" ref={nameRef} />
+                <input id="name_input" type="text" placeholder="Название" ref={nameRef} />
                 <br />
                 <div>
-                    <input id="date_input" type="date" onClick={handleDateChange}></input>
-                    <input id="time_input" type="time"></input>
+                    <input id="date_input" style={{width: "50%"}} type="date" onClick={handleDateChange}></input>
+                    <input id="time_input" style={{width: "33%"}} type="time"></input>
                     {/*<DateTimePicker
                         className = 'DateTimePicker'
                         onChange={handleDateChange}
@@ -93,7 +95,6 @@ const NewEvent = () => {
                         onCalendarOpen={() => setIsDatePickerOpen(true)}
                     />*/}
                 </div>
-                <br />
                 <input id="address_input" type="search" placeholder="Точка сбора" ref={addressRef} onChange={handleAddressChange} />
                 {suggestions.length > 0 && (
                     <div className="suggestions">
@@ -104,14 +105,14 @@ const NewEvent = () => {
                 )}
             </div>
             <div style={{ display: 'inline-block' }}>
-                <input id="agemin_input" type="text" placeholder="Мин. возраст" ref={ageMinRef} />
+                <input id="agemin_input" type="number" placeholder="Мин. возраст" ref={ageMinRef} />
                 <br />
-                <input id="agemax_input" type="text" placeholder="Макс. возраст" ref={ageMaxRef} />
+                <input id="agemax_input" type="number" placeholder="Макс. возраст" ref={ageMaxRef} />
                 <br />
-                <input id="maxcount_input" type="text" placeholder="Макс. кол-во участников" ref={maxCountRef} />
-                <br />
-                <input type="submit" value='Опубликовать' className='ToGoButton' onClick={() => NewEventAdd(nameRef, date, addressRef, ageMinRef, ageMaxRef, maxCountRef, setCords)} />
+                <input id="maxcount_input" type="number" placeholder="Макс. кол-во участников" ref={maxCountRef} />
             </div>
+            <br />
+            <input type="submit" value='Опубликовать' style={{width: '100%'}} className='ToGoButton' onClick={() => NewEventAdd(nameRef, date, addressRef, ageMinRef, ageMaxRef, maxCountRef, setCords)} />
         </div>
     );
 };

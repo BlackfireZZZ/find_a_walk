@@ -24,7 +24,6 @@ header{
 #CurrentEvents{
     width: 95%;
     height: 37vh;
-    position: absolute;
     background-color:rgb(223, 223, 223);
     margin: 0;
     padding: 10px;
@@ -32,7 +31,7 @@ header{
 }
 #CreateEvent {
     width: auto;
-    height: 250px;
+    height: 400px;
     position: absolute;
     top: 20%;
     left: 30%;
@@ -69,6 +68,7 @@ header{
     border-radius: 10px;
 }
 .NegativeButton:hover {
+    cursor: pointer;
     background-color: rgb(255, 94, 0);
 }
 .ContactElement{
@@ -80,6 +80,7 @@ header{
     width: 80%
 }
 .GeoSuggest {
+    font-family: 'Comfortaa';
     background-color: white;
     font-family: Arial;
     font-size: 12px;
