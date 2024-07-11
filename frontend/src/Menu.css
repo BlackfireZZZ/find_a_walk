@@ -1,0 +1,48 @@
+.menu {
+    position: fixed;
+    width: 100vw;
+    height: 100vw;
+    top: 8px;
+    left: 0;
+    font-family: 'Comfortaa';
+    transform: translateX(-130%);
+    transition: 0.5ms all;
+}
+.menu.active {
+    transform: translateX(0);
+
+}
+.menu-content {
+    width: 30%;
+    height: 100%;
+    background-color: #bbbbbb;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    padding: 20px;
+    transition: 0.5ms all;
+
+    
+}
+.menu-header {
+    font-size: 2rem;
+    border-bottom: 3px solid #00B78B;
+    width: 100%;
+    text-align: center;
+}
+ul li  {
+    text-decoration: none;
+    margin: 25px 0;
+}
+a {
+    padding:10px;
+    margin: 3%;
+    background-color: rgb(217, 217, 217);
+    border-radius: 15px;
+}
+.menu-button {
+    float: right;
+}
+.items {
+    background-color: #bbbbbb;;
+}
