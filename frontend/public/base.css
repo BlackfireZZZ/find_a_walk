@@ -23,7 +23,7 @@ input {
     border-radius: 20px;
     margin: 5px;
 }
-input:hover {
+input[type=button]:hover {
     background-color: gray;
     color: white;
 }

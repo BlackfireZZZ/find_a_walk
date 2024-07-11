@@ -20,8 +20,8 @@
                          center: [55.7558, 37.6176],
                          zoom: 10
                      });
-                     var dots = []
-                     let events = []
+                     var dots = [];
+                     let events = [];
                      events.forEach(event => {
                          dots.push(
                              new window.ymaps.Placemark(

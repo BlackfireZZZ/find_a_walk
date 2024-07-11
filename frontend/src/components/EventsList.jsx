@@ -31,6 +31,7 @@ const EventsList = () => {
             return [];
         }
     }
+    let events = getEvents();
     return (
         <div id="CurrentEvents" style={{}}>
             {events.map((event, index) => (

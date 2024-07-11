@@ -59,14 +59,15 @@ const NewEvent = () => {
         setSuggestions(suggestions);
     };
 
+    const handleDateChange = () => {
+        const date = document.getElementById('date_input').value;
+        const time = document.getElementById('time_input').value;
+        setDate();
+        setIsDatePickerOpen(false); // Close the date picker after selecting a date
+    };
     const handleSuggestionClick = (suggestion) => {
         addressRef.current.value = suggestion;
         setSuggestions([]);
-    };
-
-    const handleDateChange = (date) => {
-        setDate(date);
-        setIsDatePickerOpen(false); // Close the date picker after selecting a date
     };
 
     return (
@@ -79,8 +80,8 @@ const NewEvent = () => {
                 <input id="name_input" type="search" placeholder="Название" ref={nameRef} />
                 <br />
                 <div>
-                    <input type="date"></input>
-                    <input type="time"></input>
+                    <input id="date_input" type="date" onClick={handleDateChange}></input>
+                    <input id="time_input" type="time"></input>
                     {/*<DateTimePicker
                         className = 'DateTimePicker'
                         onChange={handleDateChange}
