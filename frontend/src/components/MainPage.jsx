@@ -8,7 +8,7 @@ const MainScreen = () => (
     <div className="App">
         <Header/>
         <main>
-            <Profile user={loggedUser}/>
+            {/*<Profile user={loggedUser}/>*/}
             <div style={{display: 'inline-block', width: '78%'}}>
                 <YandexMap/>
                 <EventsList/>

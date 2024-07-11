@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import config from '../config';
 
 const LoginCheck = async (email, password, setError) => {
         try {
-                const response = await axios.post('http://localhost/api/v1/auth/login', {
+                const response = await axios.post(config.Host_url + 'auth/login', {
                         email,
                         password
                 }, {

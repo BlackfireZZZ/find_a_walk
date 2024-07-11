@@ -1,5 +1,5 @@
 import {EventObj, Event} from "./Event";
-
+import config from '../config';
 const EventsList = () => {
 
 
@@ -22,7 +22,7 @@ const EventsList = () => {
     const getEvents = () => {
         try {
             let xhr = new XMLHttpRequest();
-            let url = 'http://localhost/api/events';
+            let url = config.Host_url + 'events';
             xhr.open("GET", url, true);
             xhr.send();
             return JSON.parse(xhr.responseText).map((event) => NewEventFromJson(event));

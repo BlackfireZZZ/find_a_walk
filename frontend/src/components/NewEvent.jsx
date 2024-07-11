@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import DateTimePicker from 'react-datetime-picker';
 import { users, loggedUser } from './Profile.jsx';
 import { EventObj } from './Event.jsx';
+import Host_url from '../config'
+import config from "../config";
 
 const NewEventAdd = async (nameRef, date, addressRef, ageMinRef, ageMaxRef, maxCountRef, setCords) => {
     const name = nameRef.current.value;
@@ -33,7 +35,7 @@ const NewEventAdd = async (nameRef, date, addressRef, ageMinRef, ageMaxRef, maxC
     );
 
     const xhr = new XMLHttpRequest();
-    const url = 'http://localhost/api/events';
+    const url = config.Host_url + 'events';
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhr.send(JSON.stringify(event));
