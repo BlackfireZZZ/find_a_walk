@@ -14,21 +14,31 @@ import (
 type UserRepository interface {
 	GetUserByID(ctx context.Context, id uuid.UUID) (*domain.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
+	CreateInterests(ctx context.Context, id uuid.UUID, interests []string) (*domain.User, error)
+	DeleteInterests(ctx context.Context, id uuid.UUID, interests [] string) error
 	CreateUser(ctx context.Context, user *domain.UserIn) (*domain.User, error)
 	IsUserExists(ctx context.Context, email string) (bool, error)
 }
 
 type UserService struct {
-	repo        UserRepository
-	jwtConfig   *jwtauth.JWTAuth
+	repo      UserRepository
+	jwtConfig *jwtauth.JWTAuth
 }
 
 func NewDefaultUserService(repo UserRepository, tokenConfig *jwtauth.JWTAuth) *UserService {
 	return &UserService{repo: repo, jwtConfig: tokenConfig}
 }
 
-func (s *UserService) GetJWTConfig() (*jwtauth.JWTAuth) {
+func (s *UserService) GetJWTConfig() *jwtauth.JWTAuth {
 	return s.jwtConfig
+}
+
+func (s *UserService) CreateInterests(ctx context.Context, id uuid.UUID, interests []string) (*domain.User, error) {
+	return s.repo.CreateInterests(ctx, id, interests)
+}
+
+func (s *UserService) DeleteInterests(ctx context.Context, id uuid.UUID, interests []string) error {
+	return s.repo.DeleteInterests(ctx, id, interests)
 }
 
 func (s *UserService) GetUserByID(ctx context.Context, id uuid.UUID) (*domain.User, error) {

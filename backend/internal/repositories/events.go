@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"find_a_walk/internal/domain"
-	"fmt"
 	"log"
 	"time"
 
@@ -24,7 +23,7 @@ func NewEventRepository(db *pgxpool.Pool) *EventRepository {
 
 func (r *EventRepository) CreateEvent(ctx context.Context, event *domain.EventIn) (*domain.Event, error) {
 	eventSchema := domain.NewEvent(event.AuthorID, event.Name, event.StartLongitude,
-		event.StartLongitude, event.EndLatitude, event.EndLongitude,
+		event.StartLatitude, event.EndLatitude, event.EndLongitude,
 		event.Date, event.Capacity)
 
 	query_events := squirrel.Insert("events").
@@ -84,18 +83,20 @@ func (r *EventRepository) CreateEvent(ctx context.Context, event *domain.EventIn
 	return &eventSchema, nil
 }
 
-func TagsToString(tags []string) string {
-	stringTags := "("
-	for i, tag := range tags {
-		log.Println(i)
-		if len(tags) == i+1 {
-			stringTags += fmt.Sprintf("'%s'", tag)
-		} else {
-			stringTags += fmt.Sprintf("'%s',", tag)
-		}
+func (r *EventRepository) DeleteEvent(ctx context.Context, id uuid.UUID) error {
+	query := squirrel.Delete("events").
+		Where(squirrel.Eq{"id": id}).
+		PlaceholderFormat(squirrel.Dollar)
+	stmt, args, err := query.ToSql()
+	if err != nil {
+		return err
 	}
-	stringTags += ")"
-	return stringTags
+
+	_, err = r.db.Exec(ctx, stmt, args...)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*domain.Event, error) {
@@ -103,13 +104,14 @@ func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*doma
 		Select("distinct events.*", "count(members.event_id) as members_count").
 		From("events").
 		JoinClause("FULL JOIN members ON members.event_id = events.id").
-		InnerJoin("event_tags ON event_tags.event_id = events.id").
-		Where(fmt.Sprintf("event_tags.tag_id in %s AND event_tags.event_id = events.id", TagsToString(tags))).
 		GroupBy("events.id").
 		PlaceholderFormat(squirrel.Dollar)
 
+	if len(tags) > 0 {
+		query = query.InnerJoin("event_tags ON event_tags.event_id = events.id").
+			Where(squirrel.Eq{"event_tags.tag_id": tags})
+	}
 	stmt, args, error := query.ToSql()
-	log.Println(stmt)
 
 	if error != nil {
 		return nil, error
@@ -124,7 +126,7 @@ func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*doma
 	for rows.Next() {
 		event := &domain.Event{}
 		err = rows.
-			Scan(&event.ID, &event.Name, &event.AuthorID, &event.StartLatitude,
+			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
 				&event.StartLongitude, &event.EndLatitude,
 				&event.EndLongitude, &event.Date, &event.Capacity,
 				&event.MembersCount)
@@ -138,6 +140,46 @@ func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*doma
 		events = append(events, event)
 	}
 
+	return events, nil
+}
+
+func (r *EventRepository) GetEventsByUserID(ctx context.Context, userID uuid.UUID) ([]*domain.Event, error) {
+	query := squirrel.
+		Select("distinct events.*", "count(members.event_id) as members_count").
+		From("events").
+		JoinClause("FULL JOIN members ON members.event_id = events.id").
+		GroupBy("events.id").
+		Where(squirrel.Eq{"author_id": userID}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	stmt, args, error := query.ToSql()
+
+	if error != nil {
+		return nil, error
+	}
+
+	rows, err := r.db.Query(ctx, stmt, args...)
+	if err != nil {
+		return nil, error
+	}
+
+	var events []*domain.Event
+	for rows.Next() {
+		event := &domain.Event{}
+		err = rows.
+			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+				&event.StartLongitude, &event.EndLatitude,
+				&event.EndLongitude, &event.Date, &event.Capacity,
+				&event.MembersCount)
+		if err != nil {
+			return nil, err
+		}
+		event.Tags, err = r.GetTagsByEventID(ctx, event.ID)
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
 	return events, nil
 }
 
@@ -157,7 +199,7 @@ func (r *EventRepository) GetEventByID(ctx context.Context, id uuid.UUID) (*doma
 	}
 
 	err := r.db.QueryRow(ctx, stmt, args...).
-		Scan(&event.ID, &event.Name, &event.AuthorID, &event.StartLatitude,
+		Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
 			&event.StartLongitude, &event.EndLatitude,
 			&event.EndLongitude, &event.Date, &event.Capacity,
 			&event.MembersCount)
@@ -178,19 +220,21 @@ func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1
 		Select("distinct events.*", "count(members.event_id) as members_count").
 		From("events").
 		JoinClause("FULL JOIN members ON members.event_id = events.id").
-		InnerJoin("event_tags ON event_tags.event_id = events.id").
-		Where(fmt.Sprintf("event_tags.tag_id = %s AND event_tags.event_id = events.id", TagsToString(tags))).
 		GroupBy("events.id").
-		PlaceholderFormat(squirrel.Dollar)
-
-	stmt, args, err := query.
 		Where(squirrel.And{
 			squirrel.GtOrEq{"start_longitude": lon1},
 			squirrel.LtOrEq{"start_longitude": lon2},
 			squirrel.GtOrEq{"start_latitude": lat1},
 			squirrel.LtOrEq{"start_latitude": lat2},
 		}).
-		ToSql()
+		PlaceholderFormat(squirrel.Dollar)
+
+	if len(tags) > 0 {
+		query = query.InnerJoin("event_tags ON event_tags.event_id = events.id").
+			Where(squirrel.Eq{"event_tags.tag_id": tags})
+	}
+
+	stmt, args, err := query.ToSql()
 
 	if err != nil {
 		return nil, err
@@ -204,7 +248,7 @@ func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1
 	for rows.Next() {
 		event := &domain.Event{}
 		err = rows.
-			Scan(&event.ID, &event.Name, &event.AuthorID, &event.StartLatitude,
+			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
 				&event.StartLongitude, &event.EndLatitude,
 				&event.EndLongitude, &event.Date, &event.Capacity,
 				&event.MembersCount)
@@ -236,3 +280,69 @@ func (r *EventRepository) DeleteExpiredEvents(ctx context.Context) error {
 	}
 	return nil
 }
+
+func (r *EventRepository) CreateEventMember(ctx context.Context, eventID uuid.UUID, userID uuid.UUID) error {
+	query := squirrel.Insert("members").
+		Columns("user_id", "event_id").
+		Values(userID, eventID).
+		PlaceholderFormat(squirrel.Dollar)
+	stmt, args, err := query.ToSql()
+
+	if err != nil {
+		return err
+	}
+	_, err = r.db.Exec(ctx, stmt, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *EventRepository) DeleteEventMember(ctx context.Context, eventID uuid.UUID, userID uuid.UUID) error {
+	query := squirrel.Delete("members").
+		Where(
+			squirrel.And{
+				squirrel.Eq{"event_id": eventID},
+				squirrel.Eq{"user_id": userID},
+			}).
+		PlaceholderFormat(squirrel.Dollar)
+	stmt, args, err := query.ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.Exec(ctx, stmt, args...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// func (r *EventRepository) GetEventMembers(ctx context.Context, eventID uuid.UUID) ([]*domain.User, error) {
+// 	query := squirrel.Select("users.id", "users.name").
+// 		From("users").
+// 		LeftJoin("members ON members.user_id = users.id").
+// 		Where(squirrel.Eq{"members.event_id": eventID}).
+// 		PlaceholderFormat(squirrel.Dollar)
+// 	stmt, args, error := query.ToSql()
+
+// 	for rows.Next() {
+// 		event := &domain.Event{}
+// 		err = rows.
+// 			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+// 				&event.StartLongitude, &event.EndLatitude,
+// 				&event.EndLongitude, &event.Date, &event.Capacity,
+// 				&event.MembersCount)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		event.Tags, err = r.GetTagsByEventID(ctx, event.ID)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		result = append(result, event)
+// 	}
+// 	return result, nil
+// 	return []*domain.User{}, nil
+// }

@@ -41,7 +41,7 @@ func NewEvent(authorID uuid.UUID, name string, startLongitude float64,
 }
 
 type EventIn struct {
-	AuthorID       uuid.UUID `json:"author_id"`
+	AuthorID       uuid.UUID
 	Name           string    `json:"name"`
 	StartLongitude float64   `json:"start_longitude"`
 	StartLatitude  float64   `json:"start_latitude"`

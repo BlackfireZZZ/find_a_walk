@@ -9,10 +9,11 @@ import (
 )
 
 type User struct {
-	ID       uuid.UUID `json:"id"`
-	Name     string    `json:"name"`
-	Email    string    `json:"email"`
-	Password string    `json:"-"`
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email,omitempty"`
+	Password  string    `json:"-"`
+	Interests []*Tag    `json:"interests,omitempty"`
 }
 
 type UserIn struct {
@@ -26,12 +27,21 @@ type UserAuth struct {
 	Password string `json:"password"`
 }
 
+type UserInterestIn struct {
+	Interests []string `json:"interests"`
+}
+
+func (a *UserInterestIn) Bind(r *http.Request) error {
+	return nil
+}
+
 func NewUser(name, password, email string) User {
 	return User{
-		ID:       uuid.New(),
-		Name:     name,
-		Email:    email,
-		Password: password,
+		ID:        uuid.New(),
+		Name:      name,
+		Email:     email,
+		Password:  password,
+		Interests: []*Tag{},
 	}
 }
 

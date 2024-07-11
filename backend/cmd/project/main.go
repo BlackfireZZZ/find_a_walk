@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
@@ -16,13 +15,10 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
 
-	"embed"
 	"find_a_walk/internal/handlers"
 	"find_a_walk/internal/repositories"
 	"find_a_walk/internal/services"
 )
-
-var embedMigrations embed.FS
 
 func init() {
 	if err := godotenv.Load(); err != nil {
@@ -75,20 +71,33 @@ func main() {
 	// Public
 	r.Route("/users", func(r chi.Router) {
 		r.With(jwtAuthMiddlewares...).Get("/{id}", mainHandlers.UserHandler.GetUserByID)
+		r.With(jwtAuthMiddlewares...).Get("/me", mainHandlers.UserHandler.GetUserProfile)
+		r.With(jwtAuthMiddlewares...).Post("/interests", mainHandlers.UserHandler.CreateInterest)
+		r.With(jwtAuthMiddlewares...).Delete("/interests", mainHandlers.UserHandler.DeleteInterests)
 		r.Post("/", mainHandlers.UserHandler.CreateUser)
 	})
 
 	r.Route("/events", func(r chi.Router) {
+		r.With(jwtAuthMiddlewares...).Delete("/{id}", mainHandlers.EventHandler.DeleteEvent)
 		r.With(jwtAuthMiddlewares...).Get("/{id}", mainHandlers.EventHandler.GetEventByID)
-		r.Get("/", mainHandlers.EventHandler.GetEvents)
 		r.With(jwtAuthMiddlewares...).Post("/", mainHandlers.EventHandler.CreateEvent)
+		r.With(jwtAuthMiddlewares...).Get("/me", mainHandlers.EventHandler.GetMyEvents)
+
+		/*
+			r.With(jwtAuthMiddlewares...).Post("/{id}/member", mainHandlers.EventHandler.CreateEventMember)
+
+			r.With(jwtAuthMiddlewares...).Delete("/{id}/member", mainHandlers.EventHandler.DeleteEventMember)
+			r.With(jwtAuthMiddlewares...).Get("/{id}/members", mainHandlers.EventHandler.GetEventMembers)
+			r.With(jwtAuthMiddlewares...).Get("/members/me", mainHandlers.EventHandler.GetMyEventMembers)
+		*/
+
+		r.Get("/", mainHandlers.EventHandler.GetEvents)
 	})
 
 	r.Route("/tags", func(r chi.Router) {
 		r.Get("/", mainHandlers.TagsHandler.GetTags)
 	})
 
-	// Start HTTP server
 	log.Println("Starting server on: ", os.Getenv("SERVER_ADRESS"))
 	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_ADRESS"), r))
 }
