@@ -29,7 +29,7 @@
                              new window.ymaps.Placemark(
                              [event[0], event[1]], 
                              {
-                                balloonContentHeader: 'Чилл без бухла',
+                                balloonContentHeader: 'Моя тусовка',
                                 balloonContentBody: '<p>Курский вокзал, 13.07.2024</p><input type="button" class="ToGoButton" value="Я приду!"></input>',
                                 balloonContentFooter: '16-19 лет, до 8 человек',
                                 hintContent: 'Чилл без бухла', })
