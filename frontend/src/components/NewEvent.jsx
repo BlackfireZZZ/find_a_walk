@@ -117,6 +117,8 @@ const NewEvent = () => {
             </div>
             <div style={{display: 'inline-block'}}>
                 <input id="maxcount_input" type="number" placeholder="Макс. кол-во участников" ref={maxCountRef}/>
+                <input id="maxcount_input" type="number" placeholder="Мин. возраст участников" ref={maxCountRef}/>
+                <input id="maxcount_input" type="number" placeholder="Макс. возраст участников" ref={maxCountRef}/>
             </div>
             <br/>
             <div className="interests-section">

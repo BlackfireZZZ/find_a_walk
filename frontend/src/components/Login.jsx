@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import config from '../config';
-import { redirect } from "react-router-dom";
 
 
 const LoginCheck = async (email, password, setError) => {
@@ -43,7 +42,7 @@ const LoginScreen = () => {
                     <h1>Findy. Log in</h1>
                     <input
                         style={{border: '1px black solid', width: '95%'}}
-                        placeholder="Nickname"
+                        placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />

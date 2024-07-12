@@ -126,7 +126,7 @@ func (r *EventRepository) GetEvents(ctx context.Context, tags []string) ([]*doma
 	for rows.Next() {
 		event := &domain.Event{}
 		err = rows.
-			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+			Scan(&event.ID, &event.Name, &event.AuthorID, &event.StartLatitude,
 				&event.StartLongitude, &event.EndLatitude,
 				&event.EndLongitude, &event.Date, &event.Capacity,
 				&event.MembersCount)
@@ -167,7 +167,7 @@ func (r *EventRepository) GetEventsByUserID(ctx context.Context, userID uuid.UUI
 	for rows.Next() {
 		event := &domain.Event{}
 		err = rows.
-			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+			Scan(&event.ID, &event.Name, &event.AuthorID, &event.StartLatitude,
 				&event.StartLongitude, &event.EndLatitude,
 				&event.EndLongitude, &event.Date, &event.Capacity,
 				&event.MembersCount)
@@ -199,7 +199,7 @@ func (r *EventRepository) GetEventByID(ctx context.Context, id uuid.UUID) (*doma
 	}
 
 	err := r.db.QueryRow(ctx, stmt, args...).
-		Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+		Scan(&event.ID, &event.Name, &event.AuthorID, &event.StartLatitude,
 			&event.StartLongitude, &event.EndLatitude,
 			&event.EndLongitude, &event.Date, &event.Capacity,
 			&event.MembersCount)
@@ -248,7 +248,7 @@ func (r *EventRepository) GetEventsByAnglesCoordinates(ctx context.Context, lon1
 	for rows.Next() {
 		event := &domain.Event{}
 		err = rows.
-			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+			Scan(&event.ID, &event.Name, &event.AuthorID, &event.StartLatitude,
 				&event.StartLongitude, &event.EndLatitude,
 				&event.EndLongitude, &event.Date, &event.Capacity,
 				&event.MembersCount)
@@ -344,7 +344,7 @@ func (r *EventRepository) GetEventsByEventMember(ctx context.Context, userID uui
 	for rows.Next() {
 		event := &domain.Event{}
 		err = rows.
-			Scan(&event.ID, &event.AuthorID, &event.StartLatitude,
+			Scan(&event.ID, &event.Name, &event.AuthorID, &event.StartLatitude,
 				&event.StartLongitude, &event.EndLatitude,
 				&event.EndLongitude, &event.Date, &event.Capacity,
 				&event.MembersCount)
