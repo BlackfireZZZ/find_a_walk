@@ -6,7 +6,6 @@ const EventsList = () => {
     function NewEventFromJson(json) {
         return new EventObj(
             json['name'],
-            json['id'],
             json['author_id'],
             json['start_longitude'],
             json['start_latitude'],

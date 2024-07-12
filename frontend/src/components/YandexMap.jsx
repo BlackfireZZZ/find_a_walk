@@ -1,6 +1,5 @@
  import React, { useEffect } from 'react';
 
-
  const YandexMap = () => {
      useEffect(() => {
          const loadScript = (url) => {
@@ -30,7 +29,9 @@
                              [event[0], event[1]], 
                              {
                                 balloonContentHeader: 'Чилл без бухла',
-                                balloonContentBody: '<p>Курский вокзал, 13.07.2024</p><input type="button" class="ToGoButton" value="Я приду!"></input>',
+                                balloonContentBody: '\
+                                <p>Курский вокзал, 13.07.2024</p>\
+                                <input type="button" class="ToGoButton" value="Я приду!" onClick=""/>',
                                 balloonContentFooter: '16-19 лет, до 8 человек',
                                 hintContent: 'Чилл без бухла', })
                          )

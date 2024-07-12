@@ -20,16 +20,14 @@ const NewEventAdd = async (nameRef, date, addressRef, ageMinRef, ageMaxRef, maxC
 
     // Create event object and send data to the server
     const event = new EventObj(
-        name,
-        null,
         '17fd3c37-cdfd-4170-b7c0-2d6f640c0b8d',
+        name,
         parseFloat(cords[0]),
         parseFloat(cords[1]),
         null,
         null,
         date.toISOString(),
         maxcount,
-        0,
         []
     );
 
