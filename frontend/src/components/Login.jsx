@@ -16,7 +16,7 @@ const LoginCheck = async (email, password, setError) => {
                 });
 
                 // Успешный вход
-                document.cookie = `Authorization=${response.data.token}; path=/;`;
+                document.cookie = `jwt=${response.data.token}; path=/;`;
                 // Перенаправление на главную страницу или другую страницу
                 return redirect('/')
         } catch (error) {

@@ -8,7 +8,7 @@ const MainScreen = () => (
     <div className="App">
         <Header/>
         <main>
-            {/* <Profile user={loggedUser}/> */}
+            {document.cookie == '' ? window.location.href = '/login' : ''}
             <div style={{display: 'inline-block', width: '100%'}}>
                 <YandexMap/>
                 <EventsList/>

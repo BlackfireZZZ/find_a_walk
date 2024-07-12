@@ -4,7 +4,7 @@ header{
     font-family: Arial;
 }
 #map{
-    width: 203vh;
+    width: 202vh;
     height: 350px;
 }
 #Profile{
@@ -22,7 +22,7 @@ header{
     padding: 10px;
 }
 #CurrentEvents{
-    width: 95%;
+    width: 100%;
     height: 37vh;
     background-color:rgb(223, 223, 223);
     margin: 0;
