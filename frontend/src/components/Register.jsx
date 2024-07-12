@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 import '../RegScreen.css';
 import config from "../config";
-import { redirect } from "react-router-dom";
 
 const RegScreen = () => {
     const [nickname, setNickname] = useState('');
@@ -39,6 +38,7 @@ const RegScreen = () => {
             name: nickname,
             email: email,
             password: password,
+            interests: interests
         };
 
         console.log(JSON.stringify(user))
@@ -52,26 +52,7 @@ const RegScreen = () => {
             });
 
             if (response.ok) {
-                const data = await response.json();
-                const userId = data.id;
-                Cookies.set('Authorization', `Bearer ${userId}`);
-
-                // Send interests to the server
-                const interestsResponse = await fetch(config.Host_url + 'users/interests', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${userId}`
-                    },
-                    body: JSON.stringify(interests)
-                });
-
-                if (interestsResponse.ok) {
-                    console.log('Interests added successfully');
-                    return redirect('/');
-                } else {
-                    console.error('Error adding interests');
-                }
+                window.location.href = '/'
             } else {
                 console.error('Error registering user');
             }

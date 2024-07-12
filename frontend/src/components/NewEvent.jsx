@@ -1,13 +1,12 @@
 import React, { useState, useRef } from 'react';
 import DateTimePicker from 'react-datetime-picker';
-import { users, loggedUser } from './Profile.jsx';
+import { Profile } from './Profile.jsx';
 import { EventObj } from './Event.jsx';
-import Host_url from '../config'
 import config from "../config";
 
 const NewEventAdd = async (nameRef, date, addressRef, ageMinRef, ageMaxRef, maxCountRef, setCords) => {
     const name = nameRef.current.value;
-    const host = loggedUser.nickname;
+    const host = Profile
     const address = addressRef.current.value;
     const agemin = ageMinRef.current.value;
     const agemax = ageMaxRef.current.value;
