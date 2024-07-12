@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 import '../RegScreen.css';
 import config from "../config";
-import { redirect } from "react-router-dom";
 
 const RegScreen = () => {
     const [nickname, setNickname] = useState('');
@@ -53,7 +52,7 @@ const RegScreen = () => {
             });
 
             if (response.ok) {
-                return redirect('/');
+                window.location.href = '/'
             } else {
                 console.error('Error registering user');
             }
