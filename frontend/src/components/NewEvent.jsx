@@ -8,9 +8,9 @@ const NewEventAdd = async (nameRef, date, addressRef, maxCountRef, setCords, int
     const tags = interests;
 
     // Fetch coordinates from Yandex Geocoder
-    const maps_response = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${address}&format=json`);
-    const maps_data = await maps_response.json();
-    const cords = data.maps_response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(' ');
+    const geocodeResponse = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${address}&format=json`);
+    const geocodeData = await geocodeResponse.json();
+    const cords = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(' ');
     setCords(cords);
 
     // Create event object and send data to the server
@@ -25,7 +25,7 @@ const NewEventAdd = async (nameRef, date, addressRef, maxCountRef, setCords, int
         tags: tags,
     };
 
-    const response = await fetch(config.Host_url + '/events', {
+    const serverResponse = await fetch(config.Host_url + '/events', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -33,8 +33,8 @@ const NewEventAdd = async (nameRef, date, addressRef, maxCountRef, setCords, int
         body: JSON.stringify(event),
     });
 
-    if (response.ok) {
-        const createdEvent = await response.json();
+    if (serverResponse.ok) {
+        const createdEvent = await serverResponse.json();
         console.log('Event created:', createdEvent);
         // Handle the created event, e.g., navigate to event details or show a success message
     } else {
@@ -68,9 +68,9 @@ const NewEvent = () => {
     const handleAddressChange = async (e) => {
         if (document.getElementById('address_input').value.length > 0) {
             const address = e.target.value;
-            const response = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${address}&format=json`);
-            const data = await response.json();
-            const suggestions = data.response.GeoObjectCollection.featureMember.map(member => member.GeoObject.name);
+            const geocodeResponse = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=6997c194-93fd-44c8-89ce-8639d5bcd0c1&geocode=${address}&format=json`);
+            const geocodeData = await geocodeResponse.json();
+            const suggestions = geocodeData.response.GeoObjectCollection.featureMember.map(member => member.GeoObject.name);
             setSuggestions(suggestions);
         }
     };
