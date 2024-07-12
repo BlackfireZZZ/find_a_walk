@@ -19,7 +19,7 @@ const LoginCheck = async (email, password, setError) => {
                 document.cookie = `jwt=${response.data.token}; path=/;`;
                 document.cookie = `Authorization=BEARER ${response.data.token}; path=/;`;
                 // Перенаправление на главную страницу или другую страницу
-                window.location.href = 'newEvent'
+                window.location.href = '/'
         } catch (error) {
                 if (error.response && (error.response.status === 400 || error.response.status === 401)) {
                         setError('Неверные данные входа');
