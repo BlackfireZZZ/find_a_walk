@@ -20,11 +20,6 @@ CREATE TABLE IF NOT EXISTS members (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS tags (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS event_tags (
     event_id UUID NOT NULL,
     tag_id TEXT NOT NULL,
@@ -39,10 +34,10 @@ SELECT 'up SQL query';
 -- +goose StatementEnd
 
 -- +goose Down
-DROP TABLE IF EXISTS events CASCADE;
-DROP TABLE IF EXISTS members CASCADE;
-DROP TABLE IF EXISTS tags CASCADE;
 DROP TABLE IF EXISTS event_tags CASCADE;
+DROP TABLE IF EXISTS members CASCADE;
+DROP TABLE IF EXISTS events CASCADE;
+
 -- +goose StatementBegin
 SELECT 'down SQL query';
 -- +goose StatementEnd
