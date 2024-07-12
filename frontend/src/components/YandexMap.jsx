@@ -28,10 +28,15 @@
                              new window.ymaps.Placemark(
                              [event[0], event[1]], 
                              {
+<<<<<<< HEAD
                                 balloonContentHeader: 'Чилл без бухла',
                                 balloonContentBody: '\
                                 <p>Курский вокзал, 13.07.2024</p>\
                                 <input type="button" class="ToGoButton" value="Я приду!" onClick=""/>',
+=======
+                                balloonContentHeader: 'Моя тусовка',
+                                balloonContentBody: '<p>Курский вокзал, 13.07.2024</p><input type="button" class="ToGoButton" value="Я приду!"></input>',
+>>>>>>> f2b2d2d288ecb7e6a8a9be8fedf5a1df8c546a0c
                                 balloonContentFooter: '16-19 лет, до 8 человек',
                                 hintContent: 'Чилл без бухла', })
                          )
