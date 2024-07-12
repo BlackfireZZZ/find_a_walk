@@ -14,19 +14,6 @@ const NewEventAdd = async (nameRef, date, addressRef, maxCountRef, setCords, int
     setCords(cords);
 
     // Create event object and send data to the server
-<<<<<<< HEAD
-    const event = new EventObj(
-        '17fd3c37-cdfd-4170-b7c0-2d6f640c0b8d',
-        name,
-        parseFloat(cords[0]),
-        parseFloat(cords[1]),
-        null,
-        null,
-        date.toISOString(),
-        maxcount,
-        []
-    );
-=======
     const event = {
         name: name,
         start_longitude: parseFloat(cords[0]),
@@ -37,7 +24,6 @@ const NewEventAdd = async (nameRef, date, addressRef, maxCountRef, setCords, int
         capacity: parseInt(maxcount),
         tags: tags,
     };
->>>>>>> f2b2d2d288ecb7e6a8a9be8fedf5a1df8c546a0c
 
     const serverResponse = await fetch(config.Host_url + '/events', {
         method: 'POST',
@@ -101,9 +87,11 @@ const NewEvent = () => {
     const handleSubmit = async () => {
         await NewEventAdd(nameRef, date, addressRef, maxCountRef, setCords, interests);
     };
+    
 
     return (
         <div id="CreateEvent">
+            {document.cookie == '' ? window.location.href = '/login' : ''}
             <div>
                 <h1 style={{display: 'inline-block'}}>Создание нового события</h1>
                 <h1 style={{display: 'inline-block'}} className='NegativeButton'
