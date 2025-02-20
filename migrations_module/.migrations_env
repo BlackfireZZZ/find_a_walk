@@ -1,4 +1,0 @@
-DATABASE_URL=postgres://postgres:PROD@db:5432/PROD?sslmode=disable
-SERVER_ADRESS=0.0.0.0:8000
-TOKEN_ALG=HS256
-SECRET_TOKEN=CyWk60aOvsIwrlMnWw7yxBqSn+fDe4NPIEVIlbL+sjs
